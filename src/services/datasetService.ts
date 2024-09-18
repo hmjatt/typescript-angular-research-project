@@ -1,6 +1,14 @@
 import { readFileSync } from 'fs';
 import { Record } from '../models/Record';
 
+/**
+ * Loads the dataset from a CSV file and returns an array of Record objects.
+ * 
+ * @function loadDataset
+ * @param {string} filePath - The path to the CSV dataset file.
+ * @returns {Record[]} An array of parsed Record objects.
+ * @throws {Error} If there is an issue reading the file.
+ */
 export function loadDataset(filePath: string): Record[] {
   try {
     const data = readFileSync(filePath, 'utf-8');

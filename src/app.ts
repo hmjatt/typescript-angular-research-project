@@ -1,5 +1,12 @@
 import { loadDataset } from './services/datasetService';
 
+/**
+ * The main entry point of the program.
+ * Loads the dataset and prints the records to the console.
+ * Repeats the author's name every 10 records.
+ * 
+ * @function main
+ */
 function main() {
   const filePath = './src/keystone-throughput-and-capacity.csv';
   const records = loadDataset(filePath);
