@@ -1,6 +1,3 @@
-Here's a sample `README.md` file for your project, based on the current code and functionality:
-
-```markdown
 # CST8333 Programming Language Research Project
 
 ## Overview
@@ -27,7 +24,7 @@ The program reads the dataset, creates `Record` objects for each entry, and disp
 │   │   └── Record.ts          # Contains the Record class definition
 │   ├── services
 │   │   └── datasetService.ts   # Contains the loadDataset function to read and parse the CSV
-│   ├── keystone-throughput-and-capacity.csv # The dataset file (add this to your project)
+│   ├── keystone-throughput-and-capacity.csv # The dataset file (add this to the project)
 │   └── main.ts                # Main entry point of the program
 ├── README.md                  # Project documentation
 ├── tsconfig.json              # TypeScript configuration file
@@ -41,7 +38,7 @@ The program reads the dataset, creates `Record` objects for each entry, and disp
 
 ### Prerequisites
 
-Make sure you have the following installed:
+Make sure to have the following installed:
 
 - **Node.js** (version 14.x or later)
 - **TypeScript** (version 4.x or later)
@@ -129,7 +126,7 @@ To generate the JSDoc documentation:
    npx jsdoc -c jsdoc.json
    ```
 
-2. Open the generated `index.html` file in your browser to view the full documentation.
+2. Open the generated `index.html` file in the browser to view the full documentation.
 
 ---
 
