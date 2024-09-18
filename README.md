@@ -74,7 +74,7 @@ Make sure to have the following installed:
 To run the program and output the records from the dataset:
 
 ```bash
-npx ts-node src/main.ts
+npx ts-node src/app.ts
 ```
 
 This command will:

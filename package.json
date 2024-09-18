@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/hmjatt/typescript-angular-research-project#readme",
   "dependencies": {
+    "@angular/cli": "^18.2.4",
     "@types/node": "^22.5.5",
     "typescript": "^5.6.2"
   }
