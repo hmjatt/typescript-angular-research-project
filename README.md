@@ -2,16 +2,17 @@
 
 ## Overview
 
-This project is part of the **CST8333 Programming Language Research** course and aims to demonstrate various programming concepts using **TypeScript**. It focuses on reading and processing a CSV dataset (`keystone-throughput-and-capacity.csv`), parsing the data into record objects, and outputting them to the console. 
+This project is part of the **CST8333 Programming Language Research** course, showcasing the application of **TypeScript** and other programming concepts. It focuses on processing a CSV dataset (`keystone-throughput-and-capacity.csv`), converting each entry into a `Record` object, and outputting the parsed records to the console.
 
-The program reads the dataset, creates `Record` objects for each entry, and displays the records with the author's name repeated every 10 records.
+The program handles file input, error handling, and dataset parsing, while showcasing structured code and documentation practices with JSDoc comments. The author's name, **Harmeet Matharoo**, is displayed periodically during the record output to ensure proper attribution.
 
 ### Features
 
-- **CSV Parsing:** Reads and processes a CSV dataset into `Record` objects.
-- **Error Handling:** Includes exception handling for file reading issues.
-- **JSDoc:** The code is fully documented using JSDoc comments.
-- **Author Attribution:** Displays the author's name (`Harmeet Matharoo`) periodically while printing records for visibility.
+- **CSV Parsing**: Reads and processes a CSV dataset into `Record` objects based on the dataset's columns.
+- **File I/O**: Uses Node.js's File System (FS) API to handle CSV input.
+- **Error Handling**: Implements exception handling to manage file reading issues.
+- **Author Attribution**: Displays the author's name every 10 records.
+- **JSDoc**: Fully documented code using JSDoc comments for clarity.
 
 ---
 
@@ -21,15 +22,16 @@ The program reads the dataset, creates `Record` objects for each entry, and disp
 .
 ├── src
 │   ├── models
-│   │   └── Record.ts          # Contains the Record class definition
-│   ├── services
-│   │   └── datasetService.ts   # Contains the loadDataset function to read and parse the CSV
-│   ├── keystone-throughput-and-capacity.csv # The dataset file (add this to the project)
-│   └── main.ts                # Main entry point of the program
-├── README.md                  # Project documentation
-├── tsconfig.json              # TypeScript configuration file
-├── package.json               # Node.js dependencies and scripts
-└── package-lock.json          # Dependency lock file
+│   │   └── Record.ts                                    # Contains the Record class definition
+│   ├── services         
+│   │   └── datasetService.ts                            # Contains the loadDataset function for reading and parsing CSV
+│   ├── keystone-throughput-and-capacity.csv             # The dataset file
+│   ├── Dataset Source and License - Fall 2024.docx      # Attribution and License for the dataset
+│   └── app.ts                                           # Main entry point of the program
+├── README.md                                            # Project documentation
+├── tsconfig.json                                        # TypeScript configuration file
+├── package.json                                         # Node.js dependencies and scripts
+└── package-lock.json                                    # Dependency lock file
 ```
 
 ---
@@ -38,7 +40,7 @@ The program reads the dataset, creates `Record` objects for each entry, and disp
 
 ### Prerequisites
 
-Make sure to have the following installed:
+Ensure that the following are installed:
 
 - **Node.js** (version 14.x or later)
 - **TypeScript** (version 4.x or later)
@@ -73,15 +75,34 @@ Make sure to have the following installed:
 
 To run the program and output the records from the dataset:
 
-```bash
-npx ts-node src/app.ts
-```
+1. **Start the program**:
 
-This command will:
+   Use the following command to run the program with TypeScript using `ts-node`:
 
-- Parse the `keystone-throughput-and-capacity.csv` file.
-- Output each record to the console.
-- Display the author's name (`Harmeet Matharoo - CST8333 Project`) every 10 records for visibility.
+   ```bash
+   npm start
+   ```
+
+   This command will:
+   - Read and parse the `keystone-throughput-and-capacity.csv` file.
+   - Convert each row into a `Record` object.
+   - Output the records to the console, with the author's name (`Harmeet Matharoo - CST8333 Project`) appearing every 10 records.
+
+2. **Build the program**:
+
+   To compile the TypeScript files into JavaScript, use:
+
+   ```bash
+   npm run build
+   ```
+
+   This command will transpile the TypeScript code into JavaScript and output the compiled files in the `dist/` folder (or as configured in the `tsconfig.json`).
+
+   Once the project is built, run the compiled JavaScript files with:
+
+   ```bash
+   node dist/app.js
+   ```
 
 ---
 
@@ -89,29 +110,26 @@ This command will:
 
 ```plaintext
 Harmeet Matharoo - CST8333 Project
-Record {
-  date: '2024-06-01',
-  month: 6,
-  year: 2024,
-  company: 'TransCanada Keystone Pipeline GP Ltd.',
-  pipeline: 'Keystone pipeline',
-  keyPoint: 'International boundary at or near Haskett',
-  latitude: 48.9989,
-  longitude: -97.9577,
-  directionOfFlow: 'south',
-  tradeType: 'export',
-  product: 'domestic heavy',
-  throughput: 15.072396612903225,
-  committedVolumes: 18.113609354838708,
-  uncommittedVolumes: 0,
-  nameplateCapacity: 0,
-  availableCapacity: 0,
-  reasonForVariance: 'NEB/REGULATORY DIRECTIVE'
-}
+Record 1:
+Date: 2024-06-01
+Month: 6
+Year: 2024
+Company: TransCanada Keystone Pipeline GP Ltd.
+Pipeline: Keystone pipeline
+Key Point: International boundary at or near Haskett, Manitoba
+Latitude: 48.9989
+Longitude: -97.9577
+Direction Of Flow: south
+Trade Type: export
+Product: domestic light
+Throughput (1000 m3/d): 0
+Committed Volumes (1000 m3/d): 0
+Uncommitted Volumes (1000 m3/d): 0
+Nameplate Capacity (1000 m3/d): 0
+Available Capacity (1000 m3/d): 98.39
+Reason For Variance: Capacity may vary month to month based on CER Regulatory Directive, Downstream Restrictions, Curtailment/Interruptions, Force Majeure and System Operating Factor
 
 --- Harmeet Matharoo - CST8333 Project ---
-
-... (additional records)
 ```
 
 ---
@@ -126,7 +144,7 @@ To generate the JSDoc documentation:
    npx jsdoc -c jsdoc.json
    ```
 
-2. Open the generated `index.html` file in the browser to view the full documentation.
+2. Open the generated `index.html` file in the browser to view the complete documentation.
 
 ---
 
@@ -139,4 +157,3 @@ This project uses a dataset licensed under the **Open Government License - Canad
 ## Author
 
 **Harmeet Matharoo**
-```a
