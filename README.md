@@ -13,6 +13,7 @@ The program handles file input, error handling, and dataset parsing, while showc
 - **Error Handling**: Implements exception handling to manage file reading issues.
 - **Author Attribution**: Displays the author's name every 10 records.
 - **JSDoc**: Fully documented code using JSDoc comments for clarity.
+- **Color-coded Terminal Output**: Uses the **Chalk** library to color-code column names and values for better readability in the terminal.
 
 ---
 

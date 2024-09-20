@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { Record } from '../models/Record';
+import chalk from 'chalk';
 
 /**
  * Loads the dataset from a CSV file and returns an array of `Record` objects.
@@ -21,7 +22,8 @@ import { Record } from '../models/Record';
  * @see MDN Web Docs. "Array.prototype.forEach()", Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
  * @see MDN Web Docs. "try...catch Statement", Available: hhttps://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
  * @see MDN Web Docs. "Regular Expressions", Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions
- * 
+ * @see Chalk library for terminal string styling. Available: https://github.com/chalk/chalk
+ *
  * @example
  * // Example usage:
  * const records = loadDataset('./data/keystone-throughput-and-capacity.csv');
@@ -68,14 +70,16 @@ export function loadDataset(filePath: string): Record[] {
             records.push(record); // @see Array.push
         });
 
+        // Log success message if records are successfully loaded
+        console.log(chalk.green(`Successfully loaded ${records.length} records.`));
         // Return the array of Record objects
         return records;
 
     } catch (err) { // Error handling block @see try...catch
         if (err instanceof Error) {
-            console.error(`Error reading file: ${err.message}`); // Print specific error message
+            console.error(chalk.red(`Error reading file: ${err.message}`)); // Print specific error message with color
         } else {
-            console.error('An unknown error occurred.'); // Generic error message for unknown cases
+            console.error(chalk.red('An unknown error occurred.')); // Generic error message for unknown cases
         }
         return []; // Return an empty array in case of error
     }

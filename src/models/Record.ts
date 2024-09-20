@@ -1,3 +1,5 @@
+const chalk = require('chalk');
+
 /**
  * Represents a pipeline throughput record.
  * 
@@ -10,7 +12,8 @@
  * @see Typescript Handbook for Classes. Available: https://www.typescriptlang.org/docs/handbook/2/classes.html
  * @see Mozilla Developer Network (MDN). "Console.log", Available: https://developer.mozilla.org/en-US/docs/Web/API/console/log_static
  * @see Mozilla Developer Network (MDN). "JavaScript Number Object", Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
- * 
+ * @see Chalk library for terminal string styling. Available: https://github.com/chalk/chalk
+ *
  * **Dataset Attribution and License**:
  * The dataset used in this project is from the Government of Canada.
  * Pipeline Throughput and Capacity Data - Keystone Pipeline.
@@ -75,22 +78,23 @@ export class Record {
      * @see MDN Console.log. Available: https://developer.mozilla.org/en-US/docs/Web/API/Console/log
      */
     public display(): void {
-        console.log(`Date: ${this.Date}`);
-        console.log(`Month: ${this.Month}`);
-        console.log(`Year: ${this.Year}`);
-        console.log(`Company: ${this.Company}`);
-        console.log(`Pipeline: ${this.Pipeline}`);
-        console.log(`Key Point: ${this.KeyPoint}`);
-        console.log(`Latitude: ${this.Latitude}`);
-        console.log(`Longitude: ${this.Longitude}`);
-        console.log(`Direction Of Flow: ${this.DirectionOfFlow}`);
-        console.log(`Trade Type: ${this.TradeType}`);
-        console.log(`Product: ${this.Product}`);
-        console.log(`Throughput (1000 m3/d): ${this.Throughput}`);
-        console.log(`Committed Volumes (1000 m3/d): ${this.CommittedVolumes}`);
-        console.log(`Uncommitted Volumes (1000 m3/d): ${this.UncommittedVolumes}`);
-        console.log(`Nameplate Capacity (1000 m3/d): ${this.NameplateCapacity}`);
-        console.log(`Available Capacity (1000 m3/d): ${this.AvailableCapacity}`);
-        console.log(`Reason For Variance: ${this.ReasonForVariance}`);
+        // Color-coded column names and values using chalk
+        console.log(chalk.blue('Date:'), chalk.green(this.Date));
+        console.log(chalk.blue('Month:'), chalk.green(this.Month.toString()));
+        console.log(chalk.blue('Year:'), chalk.green(this.Year.toString()));
+        console.log(chalk.blue('Company:'), chalk.green(this.Company));
+        console.log(chalk.blue('Pipeline:'), chalk.green(this.Pipeline));
+        console.log(chalk.blue('Key Point:'), chalk.green(this.KeyPoint));
+        console.log(chalk.blue('Latitude:'), chalk.green(this.Latitude.toString()));
+        console.log(chalk.blue('Longitude:'), chalk.green(this.Longitude.toString()));
+        console.log(chalk.blue('Direction Of Flow:'), chalk.green(this.DirectionOfFlow));
+        console.log(chalk.blue('Trade Type:'), chalk.green(this.TradeType));
+        console.log(chalk.blue('Product:'), chalk.green(this.Product));
+        console.log(chalk.blue('Throughput (1000 m3/d):'), chalk.green(this.Throughput.toString()));
+        console.log(chalk.blue('Committed Volumes (1000 m3/d):'), chalk.green(this.CommittedVolumes.toString()));
+        console.log(chalk.blue('Uncommitted Volumes (1000 m3/d):'), chalk.green(this.UncommittedVolumes.toString()));
+        console.log(chalk.blue('Nameplate Capacity (1000 m3/d):'), chalk.green(this.NameplateCapacity.toString()));
+        console.log(chalk.blue('Available Capacity (1000 m3/d):'), chalk.green(this.AvailableCapacity.toString()));
+        console.log(chalk.blue('Reason For Variance:'), chalk.green(this.ReasonForVariance));
     }
 }
