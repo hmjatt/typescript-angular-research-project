@@ -9,6 +9,7 @@ import pc from 'picocolors';  // Picocolors library for adding color to terminal
  * - **Methods**: The `displayRecord` function encapsulates the logic to display a `Record` object.
  * - **API Library**: It uses the `picocolors` library (imported as `pc`) to format and colorize output in the terminal for readability.
  * - **Optional Chaining**: Uses `?.` to handle cases where a field might be `null` or `undefined`.
+ * - **Handling Missing Data**: This function replaces empty or `null` values with `"N/A"` for better clarity in the output.
  * 
  * The function outputs each key property of the `Record`, such as the company name, pipeline, location, and throughput details, with color-coding for better readability in the terminal.
  * 
@@ -17,9 +18,10 @@ import pc from 'picocolors';  // Picocolors library for adding color to terminal
  * 2. **Methods**: `displayRecord` is a function (or method) that performs the task of displaying a record's details.
  * 3. **API Library**: The `picocolors` library is used to apply different colors to the printed text, making the output easier to read.
  * 4. **Error Handling with Optional Chaining**: The `?.` operator is used to safely access properties, even if they are `null` or `undefined`, preventing runtime errors.
+ * 5. **Missing Data Handling**: The function ensures that missing or undefined data, such as empty strings or `0` values, are replaced with `"N/A"` where appropriate.
  * 
  * @remarks
- * This function is useful for printing structured data (like records from a dataset) in a readable format with color coding. Each property of the `Record` is printed, and color is added using the `picocolors` library for better readability in a terminal environment.
+ * This function is useful for printing structured data (like records from a dataset) in a readable format with color coding. Each property of the `Record` is printed, and color is added using the `picocolors` library for better readability in a terminal environment. Missing values are handled by replacing empty, `null`, or `undefined` data with `"N/A"` for clarity in the output.
  * 
  * **References**:
  * @see {@link https://www.typescriptlang.org/docs/handbook/2/classes.html TypeScript Classes} for more on TypeScript classes.
@@ -41,25 +43,27 @@ import pc from 'picocolors';  // Picocolors library for adding color to terminal
  * @author Harmeet Matharoo
  */
 export function displayRecord(record: Record): void {
-    // VARIABLES:
-    // Each property of the `record` object (like Date, Company, Pipeline, etc.) is accessed and printed.
-    
-    // The `pc` (picocolors) library is used to apply colors to the terminal output.
+    // Helper function to handle missing values
+    const formatValue = (value: any) => {
+        return value === null || value === undefined || value === '' || value === 0 ? 'N/A' : value;
+    };
+
+    console.log(pc.yellow(`\nRecord:`));
     console.log(pc.blue('Date:'), pc.green(record.Date ?? 'N/A'));
-    console.log(pc.blue('Month:'), pc.green(record.Month?.toString() ?? 'N/A'));  // Optional chaining to handle null or undefined
-    console.log(pc.blue('Year:'), pc.green(record.Year?.toString() ?? 'N/A'));
-    console.log(pc.blue('Company:'), pc.green(record.Company ?? 'N/A'));
-    console.log(pc.blue('Pipeline:'), pc.green(record.Pipeline ?? 'N/A'));
-    console.log(pc.blue('Key Point:'), pc.green(record.KeyPoint ?? 'N/A'));
-    console.log(pc.blue('Latitude:'), pc.green(record.Latitude?.toString() ?? 'N/A'));
-    console.log(pc.blue('Longitude:'), pc.green(record.Longitude?.toString() ?? 'N/A'));
-    console.log(pc.blue('Direction Of Flow:'), pc.green(record.DirectionOfFlow ?? 'N/A'));
-    console.log(pc.blue('Trade Type:'), pc.green(record.TradeType ?? 'N/A'));
-    console.log(pc.blue('Product:'), pc.green(record.Product ?? 'N/A'));
-    console.log(pc.blue('Throughput (1000 m3/d):'), pc.green(record.Throughput?.toString() ?? 'N/A'));
-    console.log(pc.blue('Committed Volumes (1000 m3/d):'), pc.green(record.CommittedVolumes?.toString() ?? 'N/A'));
-    console.log(pc.blue('Uncommitted Volumes (1000 m3/d):'), pc.green(record.UncommittedVolumes?.toString() ?? 'N/A'));
-    console.log(pc.blue('Nameplate Capacity (1000 m3/d):'), pc.green(record.NameplateCapacity?.toString() ?? 'N/A'));
-    console.log(pc.blue('Available Capacity (1000 m3/d):'), pc.green(record.AvailableCapacity?.toString() ?? 'N/A'));
-    console.log(pc.blue('Reason For Variance:'), pc.green(record.ReasonForVariance ?? 'N/A'));
+    console.log(pc.blue('Month:'), pc.green(formatValue(record.Month)));
+    console.log(pc.blue('Year:'), pc.green(formatValue(record.Year)));
+    console.log(pc.blue('Company:'), pc.green(formatValue(record.Company)));
+    console.log(pc.blue('Pipeline:'), pc.green(formatValue(record.Pipeline)));
+    console.log(pc.blue('Key Point:'), pc.green(formatValue(record.KeyPoint)));
+    console.log(pc.blue('Latitude:'), pc.green(formatValue(record.Latitude)));
+    console.log(pc.blue('Longitude:'), pc.green(formatValue(record.Longitude)));
+    console.log(pc.blue('Direction Of Flow:'), pc.green(formatValue(record.DirectionOfFlow)));
+    console.log(pc.blue('Trade Type:'), pc.green(formatValue(record.TradeType)));
+    console.log(pc.blue('Product:'), pc.green(formatValue(record.Product)));
+    console.log(pc.blue('Throughput (1000 m3/d):'), pc.green(formatValue(record.Throughput)));
+    console.log(pc.blue('Committed Volumes (1000 m3/d):'), pc.green(formatValue(record.CommittedVolumes)));
+    console.log(pc.blue('Uncommitted Volumes (1000 m3/d):'), pc.green(formatValue(record.UncommittedVolumes)));
+    console.log(pc.blue('Nameplate Capacity (1000 m3/d):'), pc.green(formatValue(record.NameplateCapacity)));
+    console.log(pc.blue('Available Capacity (1000 m3/d):'), pc.green(formatValue(record.AvailableCapacity)));
+    console.log(pc.blue('Reason For Variance:'), pc.green(formatValue(record.ReasonForVariance) || 'N/A'));
 }
