@@ -19,7 +19,7 @@ The program handles file input, error handling, and dataset parsing, while showc
 
 ## Project Structure
 
-```plaintext
+```bash
 .
 ├── src
 │   ├── models
@@ -109,7 +109,7 @@ To run the program and output the records from the dataset:
 
 ## Example Output
 
-```plaintext
+```bash
 Harmeet Matharoo - CST8333 Project
 Record 1:
 Date: 2024-06-01

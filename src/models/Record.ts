@@ -26,7 +26,6 @@ export class Record {
     /**
      * Creates a new Record instance using the original column names from the dataset.
      * 
-     * @constructor
      * @param {string} Date - The date of the record.
      * @param {number} Month - The month of the record.
      * @param {number} Year - The year of the record.

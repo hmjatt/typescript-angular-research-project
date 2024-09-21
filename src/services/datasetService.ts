@@ -13,7 +13,6 @@ import chalk from 'chalk';
  * A regular expression is used to split each line of the CSV while properly handling commas that may be enclosed in quotes.
  * This ensures the correct parsing of fields, even if they contain commas.
  * 
- * @function loadDataset
  * @param {string} filePath - The path to the CSV dataset file.
  * @returns {Record[]} An array of parsed `Record` objects.
  * @throws {Error} If the file cannot be read or if an error occurs during parsing.
