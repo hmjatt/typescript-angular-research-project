@@ -28,6 +28,7 @@ import pc from 'picocolors';
  */
 export function runProgram(filePath: string): void {
     console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));
+    console.log();
 
     const records = loadDataset(filePath); // Load records from CSV
 
@@ -40,10 +41,11 @@ export function runProgram(filePath: string): void {
         
         // Print the author's name every 10 records
         if ((index + 1) % 10 === 0) {
-            console.log(pc.bold(pc.bgCyanBright("--- Harmeet Matharoo - CST8333 Project ---")));
+            console.log(pc.bold(pc.bgCyanBright("--- Output every 10th line ->  Harmeet Matharoo - CST8333 Project ---")));
         }
     });
 
+    console.log();
     // Display the author's name again at the end
     console.log(pc.bold(pc.bgCyanBright("--- Harmeet Matharoo - CST8333 Project ---")));
 }
