@@ -1,67 +1,97 @@
-import fs from 'fs';
-import { parse } from 'csv-parse';
-import { Record } from '../models/Record';
-import pc from 'picocolors';
+import fs from 'fs';  // Node.js built-in module for working with files (File I/O)
+import { parse } from 'csv-parse';  // External API library used to parse CSV files
+import { Record } from '../models/Record';  // Importing the Record class from another file
+import pc from 'picocolors';  // External library for colorized output in the terminal
 
 /**
- * Loads the dataset from a CSV file and returns an array of `Record` objects using the `csv-parse` library.
+ * Loads a dataset from a CSV file and returns an array of `Record` objects.
  * 
- * This function reads the content of a CSV file and parses the file using `csv-parse`, creating `Record` objects.
- * The CSV file must follow the column format specified in the dataset.
+ * This function demonstrates several important programming concepts:
+ * - **File I/O**: Uses Node.js's `fs.createReadStream` to read a file.
+ * - **Variables**: Declares variables like `records` to hold an array of data.
+ * - **Methods/Functions**: The `loadDataset` function performs actions like reading the CSV, processing the data, and returning a result.
+ * - **Loops**: Loops over rows in the CSV file as the data is streamed.
+ * - **Exception Handling**: Uses a `try/catch` mechanism (through Promises) to handle potential errors.
+ * - **API Library**: The `csv-parse` library is an API that processes CSV data.
  * 
- * **CSV Parsing Library**:
- * This function uses the `csv-parse` library, which simplifies reading and parsing CSV files in Node.js.
+ * @remarks
+ * The function reads data asynchronously, making it efficient for handling large files. It uses a Promise to manage asynchronous code execution, ensuring that we can wait for the file to be fully read before continuing with further processing.
  * 
- * @param {string} filePath - The path to the CSV dataset file.
- * @returns {Promise<Record[]>} A promise that resolves with an array of `Record` objects parsed from the CSV file.
- * @throws {Error} If the file cannot be read or if an error occurs during parsing.
+ * **Key Concepts**:
+ * 1. **File I/O**: Input/Output operations on files. Here we read a CSV file using streams, which lets us handle large files efficiently without loading everything into memory at once.
+ * 2. **Variables**: Used to store data. In this case, `records` is a variable that holds an array of `Record` objects.
+ * 3. **Methods**: The `loadDataset` method (or function) is a reusable piece of code that accepts a file path, processes the file, and returns the parsed data.
+ * 4. **Loop Structure**: The `.on('data', ...)` is a loop-like structure, which processes each row of the CSV file as it's read.
+ * 5. **API Library**: We use `csv-parse` to automatically parse the CSV file into individual rows and columns.
+ * 6. **Exception Handling**: The `.on('error', ...)` callback ensures that errors are caught and handled properly.
  * 
- * @see csv-parse: Node.js module to read CSV files. Available: https://csv.js.org/parse
- * @see MDN Web Docs. "Array.prototype.forEach()", Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
- * @see Picocolors library for terminal string styling. Available: https://github.com/alexeyraspopov/picocolors
- *
+ * @see {@link https://csv.js.org/parse csv-parse Documentation} for more details on CSV parsing.
+ * @see {@link https://nodejs.org/api/stream.html#stream_readable_on_event_listener Node.js Stream Documentation} for handling events on streams.
+ * @see {@link https://nodejs.org/api/events.html#events_emitter_on_eventname_listener Node.js EventEmitter Documentation} for event handling using `.on()`.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array Array Documentation} for handling arrays in JavaScript.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise Promise Documentation} for understanding asynchronous behavior.
+ * @see {@link https://github.com/alexeyraspopov/picocolors Picocolors Documentation} for terminal string styling.
+ *  
+ * @param {string} filePath - The path to the CSV file.
+ * @returns {Promise<Record[]>} A promise that resolves with an array of `Record` objects created from the CSV file data.
+ * 
+ * @throws {Error} If the file cannot be read or if parsing fails.
+ * 
  * @example
+ * ```ts
  * loadDataset('./data/keystone-throughput-and-capacity.csv')
  *   .then(records => console.log(records))
  *   .catch(error => console.error(error));
+ * ```
  * 
  * @author Harmeet Matharoo
  */
 export async function loadDataset(filePath: string): Promise<Record[]> {
-    const records: Record[] = [];
+    // VARIABLES:
+    // `records` is an array that will store the parsed records (each row of the CSV file will become a Record object)
+    const records: Record[] = [];  // An array to hold the parsed data
 
+    // RETURNING A PROMISE:
+    // A Promise allows asynchronous code (like reading a file) to be handled cleanly.
     return new Promise((resolve, reject) => {
-        fs.createReadStream(filePath)
-            .pipe(parse({ delimiter: ',' }))
-            .on('data', (row) => {
+        // FILE I/O: Reading the file using a stream, which means we don't load the entire file into memory at once.
+        fs.createReadStream(filePath)  // Create a stream to read the file from disk
+            .pipe(parse({ delimiter: ',' }))  // PIPELINE: Data is passed through `csv-parse` to break it into rows
+            .on('data', (row) => {  // LOOP: For each row of data read from the file, this function is executed
+                // Create a new Record object with values from the CSV row.
                 const record = new Record(
-                    row[0],  // Date
-                    +row[1], // Month (converted to number)
-                    +row[2], // Year (converted to number)
-                    row[3],  // Company
-                    row[4],  // Pipeline
-                    row[5],  // KeyPoint
-                    +row[6], // Latitude (converted to number)
-                    +row[7], // Longitude (converted to number)
-                    row[8],  // DirectionOfFlow
-                    row[9],  // TradeType
-                    row[10], // Product
-                    +row[11],// Throughput (converted to number)
-                    +row[12],// CommittedVolumes (converted to number)
-                    +row[13],// UncommittedVolumes (converted to number)
-                    +row[14],// NameplateCapacity (converted to number)
-                    +row[15],// AvailableCapacity (converted to number)
-                    row[16]  // ReasonForVariance
+                    row[0],  // Date column
+                    +row[1], // Month column (converted to a number)
+                    +row[2], // Year column (converted to a number)
+                    row[3],  // Company column
+                    row[4],  // Pipeline column
+                    row[5],  // KeyPoint column
+                    +row[6], // Latitude (converted to a number)
+                    +row[7], // Longitude (converted to a number)
+                    row[8],  // DirectionOfFlow column
+                    row[9],  // TradeType column
+                    row[10], // Product column
+                    +row[11],// Throughput column (converted to a number)
+                    +row[12],// CommittedVolumes column (converted to a number)
+                    +row[13],// UncommittedVolumes column (converted to a number)
+                    +row[14],// NameplateCapacity column (converted to a number)
+                    +row[15],// AvailableCapacity column (converted to a number)
+                    row[16]  // ReasonForVariance column
                 );
+                // Push the record object into the array
                 records.push(record);
             })
-            .on('end', () => {
-                console.log(pc.green(`Successfully loaded ${records.length} records.`));
-                resolve(records);
-            })
+            // ERROR HANDLING:
+            // If an error occurs during file reading or parsing, this function will be called
             .on('error', (err) => {
-                console.error(pc.red(`Error reading file: ${err.message}`));
-                reject(err);
+                console.error(pc.red(`Error reading file: ${err.message}`));  // Log the error message in red
+                reject(err);  // Reject the promise, signaling that an error occurred
+            })
+            // END OF STREAM:
+            // When all the data has been read, this function is called
+            .on('end', () => {
+                console.log(pc.green(`Successfully loaded ${records.length} records.`));  // Log success message in green
+                resolve(records);  // Resolve the promise with the array of parsed records
             });
     });
 }

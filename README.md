@@ -3,6 +3,7 @@
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
+- [Concepts Covered](#concepts-covered)
 - [Project Structure](#project-structure)
 - [How to Run the Project](#how-to-run-the-project)
 - [Running the Program](#running-the-program)
@@ -15,16 +16,32 @@
 
 This project is part of the **CST8333 Programming Language Research** course, showcasing the application of **TypeScript** and other programming concepts. It focuses on processing a CSV dataset (`keystone-throughput-and-capacity.csv`), converting each entry into a `Record` object, and outputting the parsed records to the console.
 
-The program handles file input, error handling, and dataset parsing with the help of the **csv-parse** library. It also showcases structured code and documentation practices with **TypeDoc** comments. The author's name, **Harmeet Matharoo**, is displayed periodically during the record output to ensure proper attribution.
+The program handles file input, error handling, and dataset parsing with the help of the **csv-parse** library. It also demonstrates structured code and documentation practices with **TypeDoc** comments. The author's name, **Harmeet Matharoo**, is displayed periodically during the record output to ensure proper attribution.
 
-### Features
+---
 
+## Features
+
+- **Object-Oriented Design (OOP)**: Implements a `Record` class to model each pipeline throughput record.
 - **CSV Parsing**: Reads and processes a CSV dataset into `Record` objects using the **csv-parse** library.
 - **File I/O**: Uses Node.js's File System (FS) API to handle CSV input.
 - **Error Handling**: Implements exception handling to manage file reading issues.
 - **Author Attribution**: Displays the author's name every 10 records.
 - **TypeDoc Documentation**: Generates comprehensive documentation using TypeDoc.
 - **Color-coded Terminal Output**: Uses the **Picocolors** library to color-code column names and values for better readability in the terminal.
+
+---
+
+## Concepts Covered
+
+This project demonstrates several important programming concepts, including:
+- **Variables**: Properties of the `Record` class and other variables in the code.
+- **Methods**: Functions such as `displayRecord` and `loadDataset` showcase how methods are used in TypeScript.
+- **Object-Oriented Programming (OOP)**: The project utilizes the `Record` class to create structured objects from CSV data.
+- **File I/O**: The project demonstrates reading CSV files using Node.js's `fs.createReadStream`.
+- **Exception Handling**: Demonstrates the use of `try/catch` blocks and error handling in Promises.
+- **API Library**: The project uses the `csv-parse` library to parse CSV files and the `picocolors` library for terminal output styling.
+- **Loop Structures**: The `.forEach()` method is used to loop over arrays of records and display their details.
 
 ---
 
@@ -38,6 +55,8 @@ The program handles file input, error handling, and dataset parsing with the hel
 │   ├── services         
 │   │   └── datasetService.ts                            # Contains the loadDataset function for reading and parsing CSV
 │   │   └── mainService.ts                               # Contains the main program logic (runProgram function)
+│   ├── utils
+│   │   └── displayUtils.ts                              # Contains the displayRecord function for displaying Record data
 │   ├── keystone-throughput-and-capacity.csv             # The dataset file
 │   ├── Dataset Source and License - Fall 2024.docx      # Attribution and License for the dataset
 │   └── app.ts                                           # Main entry point of the program
@@ -162,12 +181,6 @@ This project uses **TypeDoc** to generate comprehensive documentation from the c
    This command will generate the documentation inside the `docs` folder. It will also open a browser showing the generated documentation.
 
 2. Alternatively, open the `docs/index.html` file in the browser to view the generated documentation.
-
-### CSV-Parse Reference
-
-This project uses the **csv-parse** library for reading and parsing CSV files.
-
-- **csv-parse**: Node.js module to read CSV files. Available: [https://csv.js.org/parse](https://csv.js.org/parse)
 
 ---
 
