@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import pc from 'picocolors';
 
 /**
  * Represents a pipeline throughput record.
@@ -6,14 +6,6 @@ import chalk from 'chalk';
  * This class uses the original column names from the dataset, adjusting only for TypeScript syntax.
  * It captures details like the company, pipeline name, throughput, and other pipeline-related information.
  * 
- * @class Record
- * @author Harmeet Matharoo
- * 
- * @see Typescript Handbook for Classes. Available: https://www.typescriptlang.org/docs/handbook/2/classes.html
- * @see Mozilla Developer Network (MDN). "Console.log", Available: https://developer.mozilla.org/en-US/docs/Web/API/console/log_static
- * @see Mozilla Developer Network (MDN). "JavaScript Number Object", Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
- * @see Chalk library for terminal string styling. Available: https://github.com/chalk/chalk
- *
  * **Dataset Attribution and License**:
  * The dataset used in this project is from the Government of Canada.
  * Pipeline Throughput and Capacity Data - Keystone Pipeline.
@@ -21,30 +13,39 @@ import chalk from 'chalk';
  * 
  * **Open Government License**:
  * License available here: https://open.canada.ca/en/open-government-licence-canada
+ * 
+ * @see [TypeScript Handbook - Classes](https://www.typescriptlang.org/docs/handbook/2/classes.html)
+ * @see [Console.log](https://developer.mozilla.org/en-US/docs/Web/API/console/log)
+ * @see [JavaScript Number Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)
+ * @see [Picocolors Documentation](https://github.com/alexeyraspopov/picocolors)
+ * 
+ * @author Harmeet Matharoo
+ * 
+ * @example
+ * const record = new Record('2024-01-01', 1, 2024, 'Company A', 'Pipeline X', 'Location Y', 48.123, -97.456, 'south', 'export', 'oil', 100, 50, 50, 120, 100, 'No variance');
+ * record.display();
  */
 export class Record {
     /**
      * Creates a new Record instance using the original column names from the dataset.
      * 
-     * @param {string} Date - The date of the record.
-     * @param {number} Month - The month of the record.
-     * @param {number} Year - The year of the record.
-     * @param {string} Company - The company name.
-     * @param {string} Pipeline - The pipeline name.
-     * @param {string} KeyPoint - The key point location.
-     * @param {number} Latitude - The latitude of the location.
-     * @param {number} Longitude - The longitude of the location.
-     * @param {string} DirectionOfFlow - The flow direction of the pipeline.
-     * @param {string} TradeType - The type of trade.
-     * @param {string} Product - The type of product.
-     * @param {number} Throughput - The throughput in 1000 m3/d.
-     * @param {number} CommittedVolumes - Committed volumes in 1000 m3/d.
-     * @param {number} UncommittedVolumes - Uncommitted volumes in 1000 m3/d.
-     * @param {number} NameplateCapacity - The nameplate capacity in 1000 m3/d.
-     * @param {number} AvailableCapacity - The available capacity in 1000 m3/d.
-     * @param {string} ReasonForVariance - The reason for any variance.
-     * 
-     * @see MDN JavaScript Number Object. Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+     * @param Date - The date of the record.
+     * @param Month - The month of the record.
+     * @param Year - The year of the record.
+     * @param Company - The company name.
+     * @param Pipeline - The pipeline name.
+     * @param KeyPoint - The key point location.
+     * @param Latitude - The latitude of the location.
+     * @param Longitude - The longitude of the location.
+     * @param DirectionOfFlow - The flow direction of the pipeline.
+     * @param TradeType - The type of trade.
+     * @param Product - The type of product.
+     * @param Throughput - The throughput in 1000 m3/d.
+     * @param CommittedVolumes - Committed volumes in 1000 m3/d.
+     * @param UncommittedVolumes - Uncommitted volumes in 1000 m3/d.
+     * @param NameplateCapacity - The nameplate capacity in 1000 m3/d.
+     * @param AvailableCapacity - The available capacity in 1000 m3/d.
+     * @param ReasonForVariance - The reason for any variance.
      */
     constructor(
         public Date: string,
@@ -72,28 +73,28 @@ export class Record {
      * This method prints the full details of a `Record` instance to the console, formatted as a string. 
      * It includes all the key properties of the record, such as the company name, pipeline, location, and throughput details.
      * 
-     * @returns {void}
+     * @returns Nothing.
      * 
-     * @see MDN Console.log. Available: https://developer.mozilla.org/en-US/docs/Web/API/Console/log
+     * @see [Console.log](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)
      */
     public display(): void {
-        // Color-coded column names and values using chalk
-        console.log(chalk.blue('Date:'), chalk.green(this.Date));
-        console.log(chalk.blue('Month:'), chalk.green(this.Month.toString()));
-        console.log(chalk.blue('Year:'), chalk.green(this.Year.toString()));
-        console.log(chalk.blue('Company:'), chalk.green(this.Company));
-        console.log(chalk.blue('Pipeline:'), chalk.green(this.Pipeline));
-        console.log(chalk.blue('Key Point:'), chalk.green(this.KeyPoint));
-        console.log(chalk.blue('Latitude:'), chalk.green(this.Latitude.toString()));
-        console.log(chalk.blue('Longitude:'), chalk.green(this.Longitude.toString()));
-        console.log(chalk.blue('Direction Of Flow:'), chalk.green(this.DirectionOfFlow));
-        console.log(chalk.blue('Trade Type:'), chalk.green(this.TradeType));
-        console.log(chalk.blue('Product:'), chalk.green(this.Product));
-        console.log(chalk.blue('Throughput (1000 m3/d):'), chalk.green(this.Throughput.toString()));
-        console.log(chalk.blue('Committed Volumes (1000 m3/d):'), chalk.green(this.CommittedVolumes.toString()));
-        console.log(chalk.blue('Uncommitted Volumes (1000 m3/d):'), chalk.green(this.UncommittedVolumes.toString()));
-        console.log(chalk.blue('Nameplate Capacity (1000 m3/d):'), chalk.green(this.NameplateCapacity.toString()));
-        console.log(chalk.blue('Available Capacity (1000 m3/d):'), chalk.green(this.AvailableCapacity.toString()));
-        console.log(chalk.blue('Reason For Variance:'), chalk.green(this.ReasonForVariance));
+        // Color-coded column names and values using picocolors (pc)
+        console.log(pc.blue('Date:'), pc.green(this.Date));
+        console.log(pc.blue('Month:'), pc.green(this.Month.toString()));
+        console.log(pc.blue('Year:'), pc.green(this.Year.toString()));
+        console.log(pc.blue('Company:'), pc.green(this.Company));
+        console.log(pc.blue('Pipeline:'), pc.green(this.Pipeline));
+        console.log(pc.blue('Key Point:'), pc.green(this.KeyPoint));
+        console.log(pc.blue('Latitude:'), pc.green(this.Latitude.toString()));
+        console.log(pc.blue('Longitude:'), pc.green(this.Longitude.toString()));
+        console.log(pc.blue('Direction Of Flow:'), pc.green(this.DirectionOfFlow));
+        console.log(pc.blue('Trade Type:'), pc.green(this.TradeType));
+        console.log(pc.blue('Product:'), pc.green(this.Product));
+        console.log(pc.blue('Throughput (1000 m3/d):'), pc.green(this.Throughput.toString()));
+        console.log(pc.blue('Committed Volumes (1000 m3/d):'), pc.green(this.CommittedVolumes.toString()));
+        console.log(pc.blue('Uncommitted Volumes (1000 m3/d):'), pc.green(this.UncommittedVolumes.toString()));
+        console.log(pc.blue('Nameplate Capacity (1000 m3/d):'), pc.green(this.NameplateCapacity.toString()));
+        console.log(pc.blue('Available Capacity (1000 m3/d):'), pc.green(this.AvailableCapacity.toString()));
+        console.log(pc.blue('Reason For Variance:'), pc.green(this.ReasonForVariance));
     }
 }
