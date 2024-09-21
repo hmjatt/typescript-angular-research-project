@@ -79,22 +79,22 @@ export class Record {
      */
     public display(): void {
         // Color-coded column names and values using picocolors (pc)
-        console.log(pc.blue('Date:'), pc.green(this.Date));
-        console.log(pc.blue('Month:'), pc.green(this.Month.toString()));
-        console.log(pc.blue('Year:'), pc.green(this.Year.toString()));
-        console.log(pc.blue('Company:'), pc.green(this.Company));
-        console.log(pc.blue('Pipeline:'), pc.green(this.Pipeline));
-        console.log(pc.blue('Key Point:'), pc.green(this.KeyPoint));
-        console.log(pc.blue('Latitude:'), pc.green(this.Latitude.toString()));
-        console.log(pc.blue('Longitude:'), pc.green(this.Longitude.toString()));
-        console.log(pc.blue('Direction Of Flow:'), pc.green(this.DirectionOfFlow));
-        console.log(pc.blue('Trade Type:'), pc.green(this.TradeType));
-        console.log(pc.blue('Product:'), pc.green(this.Product));
-        console.log(pc.blue('Throughput (1000 m3/d):'), pc.green(this.Throughput.toString()));
-        console.log(pc.blue('Committed Volumes (1000 m3/d):'), pc.green(this.CommittedVolumes.toString()));
-        console.log(pc.blue('Uncommitted Volumes (1000 m3/d):'), pc.green(this.UncommittedVolumes.toString()));
-        console.log(pc.blue('Nameplate Capacity (1000 m3/d):'), pc.green(this.NameplateCapacity.toString()));
-        console.log(pc.blue('Available Capacity (1000 m3/d):'), pc.green(this.AvailableCapacity.toString()));
-        console.log(pc.blue('Reason For Variance:'), pc.green(this.ReasonForVariance));
+        console.log(pc.blue('Date:'), pc.green(this.Date ?? 'N/A'));
+        console.log(pc.blue('Month:'), pc.green(this.Month?.toString() ?? 'N/A'));
+        console.log(pc.blue('Year:'), pc.green(this.Year?.toString() ?? 'N/A'));
+        console.log(pc.blue('Company:'), pc.green(this.Company ?? 'N/A'));
+        console.log(pc.blue('Pipeline:'), pc.green(this.Pipeline ?? 'N/A'));
+        console.log(pc.blue('Key Point:'), pc.green(this.KeyPoint ?? 'N/A'));
+        console.log(pc.blue('Latitude:'), pc.green(this.Latitude?.toString() ?? 'N/A'));
+        console.log(pc.blue('Longitude:'), pc.green(this.Longitude?.toString() ?? 'N/A'));
+        console.log(pc.blue('Direction Of Flow:'), pc.green(this.DirectionOfFlow ?? 'N/A'));
+        console.log(pc.blue('Trade Type:'), pc.green(this.TradeType ?? 'N/A'));
+        console.log(pc.blue('Product:'), pc.green(this.Product ?? 'N/A'));
+        console.log(pc.blue('Throughput (1000 m3/d):'), pc.green(this.Throughput?.toString() ?? 'N/A'));
+        console.log(pc.blue('Committed Volumes (1000 m3/d):'), pc.green(this.CommittedVolumes?.toString() ?? 'N/A'));
+        console.log(pc.blue('Uncommitted Volumes (1000 m3/d):'), pc.green(this.UncommittedVolumes?.toString() ?? 'N/A'));
+        console.log(pc.blue('Nameplate Capacity (1000 m3/d):'), pc.green(this.NameplateCapacity?.toString() ?? 'N/A'));
+        console.log(pc.blue('Available Capacity (1000 m3/d):'), pc.green(this.AvailableCapacity?.toString() ?? 'N/A'));
+        console.log(pc.blue('Reason For Variance:'), pc.green(this.ReasonForVariance ?? 'N/A'));
     }
 }

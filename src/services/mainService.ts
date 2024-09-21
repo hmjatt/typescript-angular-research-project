@@ -13,39 +13,45 @@ import pc from 'picocolors';
  * - Iterates through each record, prints the data to the console.
  * - Displays the author's name at regular intervals (every 10 records) to ensure visibility.
  * 
+ * @see csv-parse: Node.js module to read CSV files. Available: https://csv.js.org/parse
  * @see MDN Web Docs. "console.log()". Available: https://developer.mozilla.org/en-US/docs/Web/API/console/log_static
- * @see MDN Web Docs. "Array.prototype.forEach()". Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
- * @see GeeksforGeeks. "Node.js fs.readFileSync() Method", Available: https://www.geeksforgeeks.org/node-js-fs-readfilesync-method/
  * @see Picocolors library for terminal string styling. Available: https://github.com/alexeyraspopov/picocolors
  * 
  * @author Harmeet Matharoo
  * 
- * @function runProgram
  * @param {string} filePath - The path to the dataset CSV file.
- * @returns {void}
+ * @returns {Promise<void>}
  * @example
  * runProgram('./src/keystone-throughput-and-capacity.csv');
  */
-export function runProgram(filePath: string): void {
+export async function runProgram(filePath: string): Promise<void> {
     console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));
     console.log();
 
-    const records = loadDataset(filePath); // Load records from CSV
+    try {
+        const records = await loadDataset(filePath); // Load records from CSV
 
-    // Loop through records and display them
-    records.forEach((record, index) => {
-        console.log(pc.yellow(`\nRecord ${index + 1}:`));
-        record.display(); // Output the details of each record
+        // Loop through records and display them
+        records.forEach((record, index) => {
+            console.log(pc.yellow(`\nRecord ${index + 1}:`));
+            record.display(); // Output the details of each record
+
+            console.log();
+
+            // Print the author's name every 10 records
+            if ((index + 1) % 10 === 0) {
+                console.log(pc.bold(pc.bgCyanBright("--- Output every 10th line ->  Harmeet Matharoo - CST8333 Project ---")));
+            }
+        });
 
         console.log();
-        
-        // Print the author's name every 10 records
-        if ((index + 1) % 10 === 0) {
-            console.log(pc.bold(pc.bgCyanBright("--- Output every 10th line ->  Harmeet Matharoo - CST8333 Project ---")));
+        // Display the author's name again at the end
+        console.log(pc.bold(pc.bgCyanBright("--- Harmeet Matharoo - CST8333 Project ---")));
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(pc.red(`Failed to load dataset: ${error.message}`));
+        } else {
+            console.error(pc.red('An unknown error occurred.'));
         }
-    });
-
-    console.log();
-    // Display the author's name again at the end
-    console.log(pc.bold(pc.bgCyanBright("--- Harmeet Matharoo - CST8333 Project ---")));
+    }
 }

@@ -1,85 +1,67 @@
-import { readFileSync } from 'fs';
+import fs from 'fs';
+import { parse } from 'csv-parse';
 import { Record } from '../models/Record';
 import pc from 'picocolors';
 
 /**
- * Loads the dataset from a CSV file and returns an array of `Record` objects.
+ * Loads the dataset from a CSV file and returns an array of `Record` objects using the `csv-parse` library.
  * 
- * This function reads the content of a CSV file using Node.js's File System (FS) API, parses the file line by line,
- * and uses the column data to instantiate `Record` objects. The CSV file must follow the column format specified
- * in the dataset.
+ * This function reads the content of a CSV file and parses the file using `csv-parse`, creating `Record` objects.
+ * The CSV file must follow the column format specified in the dataset.
  * 
- * **Regular Expression for CSV Parsing**:
- * A regular expression is used to split each line of the CSV while properly handling commas that may be enclosed in quotes.
- * This ensures the correct parsing of fields, even if they contain commas.
+ * **CSV Parsing Library**:
+ * This function uses the `csv-parse` library, which simplifies reading and parsing CSV files in Node.js.
  * 
- * @param filePath - The path to the CSV dataset file.
- * @returns {Record[]} An array of `Record` objects parsed from the CSV file.
+ * @param {string} filePath - The path to the CSV dataset file.
+ * @returns {Promise<Record[]>} A promise that resolves with an array of `Record` objects parsed from the CSV file.
  * @throws {Error} If the file cannot be read or if an error occurs during parsing.
  * 
- * @see GeeksforGeeks. "Node.js fs.readFileSync() Method", Available: https://www.geeksforgeeks.org/node-js-fs-readfilesync-method/
+ * @see csv-parse: Node.js module to read CSV files. Available: https://csv.js.org/parse
  * @see MDN Web Docs. "Array.prototype.forEach()", Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
- * @see MDN Web Docs. "try...catch Statement", Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
- * @see MDN Web Docs. "Regular Expressions", Available: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions
  * @see Picocolors library for terminal string styling. Available: https://github.com/alexeyraspopov/picocolors
  *
  * @example
- * // Example usage:
- * const records = loadDataset('./data/keystone-throughput-and-capacity.csv');
- * console.log(records);
+ * loadDataset('./data/keystone-throughput-and-capacity.csv')
+ *   .then(records => console.log(records))
+ *   .catch(error => console.error(error));
  * 
  * @author Harmeet Matharoo
  */
-export function loadDataset(filePath: string): Record[] {
-    try {
-        // Read the file content synchronously from the provided file path
-        const data = readFileSync(filePath, 'utf-8'); // @see fs.readFileSync
-        const lines = data.split('\n').map(line => line.trim()).filter(line => line.length); // Remove empty lines
+export async function loadDataset(filePath: string): Promise<Record[]> {
+    const records: Record[] = [];
 
-        // Initialize an array to hold the parsed Record objects
-        const records: Record[] = [];
-
-        // Iterate over each line starting from the second line (index 1) @see Array.forEach
-        lines.slice(1).forEach((line) => {
-            // Split the line into values, handling cases where commas may be enclosed in quotes (e.g., "value1,value2").
-            const values = line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(value => value.replace(/"/g, '').trim());
-
-            // Create a new Record instance using the parsed values
-            const record = new Record(
-                values[0],  // Date
-                +values[1], // Month (converted to number)
-                +values[2], // Year (converted to number)
-                values[3],  // Company
-                values[4],  // Pipeline
-                values[5],  // KeyPoint
-                +values[6], // Latitude (converted to number)
-                +values[7], // Longitude (converted to number)
-                values[8],  // DirectionOfFlow
-                values[9],  // TradeType
-                values[10], // Product
-                +values[11],// Throughput (converted to number)
-                +values[12],// CommittedVolumes (converted to number)
-                +values[13],// UncommittedVolumes (converted to number)
-                +values[14],// NameplateCapacity (converted to number)
-                +values[15],// AvailableCapacity (converted to number)
-                values[16]  // ReasonForVariance
-            );
-
-            // Add the new Record object to the records array
-            records.push(record); // @see Array.push
-        });
-
-        // Log success message if records are successfully loaded
-        console.log(pc.green(`Successfully loaded ${records.length} records.`));
-        // Return the array of Record objects
-        return records;
-
-    } catch (err) { // Error handling block @see try...catch
-        if (err instanceof Error) {
-            console.error(pc.red(`Error reading file: ${err.message}`)); // Print specific error message with color
-        } else {
-            console.error(pc.red('An unknown error occurred.')); // Generic error message for unknown cases
-        }
-        return []; // Return an empty array in case of error
-    }
+    return new Promise((resolve, reject) => {
+        fs.createReadStream(filePath)
+            .pipe(parse({ delimiter: ',' }))
+            .on('data', (row) => {
+                const record = new Record(
+                    row[0],  // Date
+                    +row[1], // Month (converted to number)
+                    +row[2], // Year (converted to number)
+                    row[3],  // Company
+                    row[4],  // Pipeline
+                    row[5],  // KeyPoint
+                    +row[6], // Latitude (converted to number)
+                    +row[7], // Longitude (converted to number)
+                    row[8],  // DirectionOfFlow
+                    row[9],  // TradeType
+                    row[10], // Product
+                    +row[11],// Throughput (converted to number)
+                    +row[12],// CommittedVolumes (converted to number)
+                    +row[13],// UncommittedVolumes (converted to number)
+                    +row[14],// NameplateCapacity (converted to number)
+                    +row[15],// AvailableCapacity (converted to number)
+                    row[16]  // ReasonForVariance
+                );
+                records.push(record);
+            })
+            .on('end', () => {
+                console.log(pc.green(`Successfully loaded ${records.length} records.`));
+                resolve(records);
+            })
+            .on('error', (err) => {
+                console.error(pc.red(`Error reading file: ${err.message}`));
+                reject(err);
+            });
+    });
 }

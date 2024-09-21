@@ -15,11 +15,11 @@
 
 This project is part of the **CST8333 Programming Language Research** course, showcasing the application of **TypeScript** and other programming concepts. It focuses on processing a CSV dataset (`keystone-throughput-and-capacity.csv`), converting each entry into a `Record` object, and outputting the parsed records to the console.
 
-The program handles file input, error handling, and dataset parsing, while showcasing structured code and documentation practices with **TypeDoc** comments. The author's name, **Harmeet Matharoo**, is displayed periodically during the record output to ensure proper attribution.
+The program handles file input, error handling, and dataset parsing with the help of the **csv-parse** library. It also showcases structured code and documentation practices with **TypeDoc** comments. The author's name, **Harmeet Matharoo**, is displayed periodically during the record output to ensure proper attribution.
 
 ### Features
 
-- **CSV Parsing**: Reads and processes a CSV dataset into `Record` objects based on the dataset's columns.
+- **CSV Parsing**: Reads and processes a CSV dataset into `Record` objects using the **csv-parse** library.
 - **File I/O**: Uses Node.js's File System (FS) API to handle CSV input.
 - **Error Handling**: Implements exception handling to manage file reading issues.
 - **Author Attribution**: Displays the author's name every 10 records.
@@ -97,7 +97,7 @@ To run the program and output the records from the dataset:
    ```
 
    This command will:
-   - Read and parse the `keystone-throughput-and-capacity.csv` file.
+   - Read and parse the `keystone-throughput-and-capacity.csv` file using **csv-parse**.
    - Convert each row into a `Record` object.
    - Output the records to the console, with the author's name (`Harmeet Matharoo - CST8333 Project`) appearing every 10 records.
 
@@ -159,9 +159,15 @@ This project uses **TypeDoc** to generate comprehensive documentation from the c
    npm run docs
    ```
 
-   This command will generate the documentation inside the `docs` folder. And will open browser showing generated documentation.
+   This command will generate the documentation inside the `docs` folder. It will also open a browser showing the generated documentation.
 
 2. Alternatively, open the `docs/index.html` file in the browser to view the generated documentation.
+
+### CSV-Parse Reference
+
+This project uses the **csv-parse** library for reading and parsing CSV files.
+
+- **csv-parse**: Node.js module to read CSV files. Available: [https://csv.js.org/parse](https://csv.js.org/parse)
 
 ---
 
