@@ -7,6 +7,7 @@
 - [Project Structure](#project-structure)
 - [How to Run the Project](#how-to-run-the-project)
 - [Running the Program](#running-the-program)
+- [Testing](#testing)
 - [Example Output](#example-output)
 - [Documentation](#documentation)
 - [License](#license)
@@ -61,6 +62,11 @@ This project demonstrates several important programming concepts, including:
 │   ├── keystone-throughput-and-capacity.csv             # The dataset file
 │   ├── Dataset Source and License - Fall 2024.docx      # Attribution and License for the dataset
 │   └── app.ts                                           # Main entry point of the program
+├── tests                                                # Contains unit and integration tests
+│   ├── mainService.test.ts                              # Tests the mainService logic and user interaction
+│   ├── datasetService.test.ts                           # Tests the datasetService for loading and parsing CSVs
+│   ├── record.test.ts                                   # Tests the Record class
+│   ├── displayUtils.test.ts                             # Tests the displayRecord utility
 ├── README.md                                            # Project documentation
 ├── tsconfig.json                                        # TypeScript configuration file
 ├── package.json                                         # Node.js dependencies and scripts
@@ -137,43 +143,60 @@ Ensure that the following are installed:
 
 ---
 
+## Testing
+
+The project includes unit and integration tests for various components. These tests are written using **Jest**.
+
+### Running Tests
+
+1. To run all tests, use the following command:
+
+   ```bash
+   npm run test
+   ```
+
+2. The tests cover:
+   - **Unit tests**: Tests for the `Record` class, `datasetService`, and `displayRecord`.
+   - **Integration tests**: Tests for the entire program flow in `mainService`.
+
+---
+
 ## Example Output
 
 ```bash
---- Menu ---
-1. Display all records
-2. Create new record
-3. Update a record
-4. Delete a record
-5. Reload dataset
-6. Save dataset to file
-7. Exit
+--- Menu ---  
+1. Display all records  
+2. Create new record  
+3. Update a record  
+4. Delete a record  
+5. Reload dataset  
+6. Save dataset to file  
+7. Exit  
 
-Harmeet Matharoo - CST8333 Project
+Harmeet Matharoo - CST8333 Project  
 
 Choose an option: 1
 
 Record 1:
 
 Record:
-Date: 2024-06-01
-Month: 6
-Year: 2024
-Company: TransCanada Keystone Pipeline GP Ltd.
-Pipeline: Keystone pipeline
-Key Point: International boundary at or near Haskett, Manitoba
-Latitude: 48.9989
-Longitude: -97.9577
-Direction Of Flow: south
-Trade Type: export
-Product: domestic light
-Throughput (1000 m3/d): 0
-Committed Volumes (1000 m3/d): 0
-Uncommitted Volumes (1000 m3/d): 0
-Nameplate Capacity (1000 m3/d): 0
-Available Capacity (1000 m3/d): 98.39
+Date: 2024-06-01  
+Month: 6  
+Year: 2024  
+Company: TransCanada Keystone Pipeline GP Ltd.  
+Pipeline: Keystone pipeline  
+Key Point: International boundary at or near Haskett, Manitoba  
+Latitude: 48.9989  
+Longitude: -97.9577  
+Direction Of Flow: south  
+Trade Type: export  
+Product: domestic light  
+Throughput (1000 m3/d): 0  
+Committed Volumes (1000 m3/d): 0  
+Uncommitted Volumes (1000 m3/d): 0  
+Nameplate Capacity (1000 m3/d): 0  
+Available Capacity (1000 m3/d): 98.39  
 Reason For Variance: Capacity may vary month to month based on CER Regulatory Directive, Downstream Restrictions, Curtailment/Interruptions, Force Majeure and System Operating Factor
-
 ```
 
 ---
