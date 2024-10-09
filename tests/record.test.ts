@@ -6,6 +6,8 @@ import { Record } from '../src/models/Record';
  * This file tests the functionality of creating a Record object and verifying that
  * all properties are correctly assigned by the constructor.
  * 
+ * @author Harmeet Matharoo
+ * 
  * @see {@link ../src/models/Record} for the actual Record class being tested.
  */
 describe('Record', () => {
