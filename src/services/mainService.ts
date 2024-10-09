@@ -46,8 +46,6 @@ import pc from 'picocolors';  // External library for colorized output in the te
  * @author Harmeet Matharoo
  */
 export async function runProgram(filePath: string): Promise<void> {
-    console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));  // Display author's name at program start
-
     let records: Record[];
 
     // Exception Handling: Ensure the dataset is loaded correctly
@@ -86,7 +84,7 @@ export async function runProgram(filePath: string): Promise<void> {
         // Display author's name at the end of the menu
         console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));
 
-        rl.question("Choose an option: ", handleMenuInput);
+        rl.question("\nChoose an option: ", handleMenuInput);
     };
 
 

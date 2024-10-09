@@ -14,9 +14,9 @@
 
 ## Overview
 
-This project is part of the **CST8333 Programming Language Research** course, showcasing the application of **TypeScript** and other programming concepts. It focuses on processing a CSV dataset (`keystone-throughput-and-capacity.csv`), converting each entry into a `Record` object, and outputting the parsed records to the console.
+This project is part of the **CST8333 Programming Language Research** course, focusing on processing a CSV dataset (`keystone-throughput-and-capacity.csv`) using **TypeScript**. The program converts each entry into a `Record` object, outputs the records, and allows user interaction to view, create, update, and delete records.
 
-The program handles file input, error handling, and dataset parsing with the help of the **csv-parse** library. It also demonstrates structured code and documentation practices with **TypeDoc** comments. The author's name, **Harmeet Matharoo**, is displayed periodically during the record output to ensure proper attribution.
+The program also showcases concepts such as **File I/O**, **API libraries**, and **error handling**. The author's name, **Harmeet Matharoo**, is displayed periodically throughout the program to ensure proper attribution.
 
 ---
 
@@ -24,24 +24,25 @@ The program handles file input, error handling, and dataset parsing with the hel
 
 - **Object-Oriented Design (OOP)**: Implements a `Record` class to model each pipeline throughput record.
 - **CSV Parsing**: Reads and processes a CSV dataset into `Record` objects using the **csv-parse** library.
-- **File I/O**: Uses Node.js's File System (FS) API to handle CSV input.
-- **Error Handling**: Implements exception handling to manage file reading issues.
-- **Author Attribution**: Displays the author's name every 10 records.
-- **TypeDoc Documentation**: Generates comprehensive documentation using TypeDoc.
-- **Color-coded Terminal Output**: Uses the **Picocolors** library to color-code column names and values for better readability in the terminal.
+- **File I/O**: Uses Node.js's File System (FS) API to handle CSV input and output.
+- **Error Handling**: Implements exception handling for file reading and writing.
+- **User Interaction**: Allows users to create, update, delete records, reload datasets, and save to file via a command-line interface.
+- **Author Attribution**: Displays the author's name, **Harmeet Matharoo**, after each menu output.
+- **Color-coded Terminal Output**: Uses the **Picocolors** library to color-code terminal output for better readability.
 
 ---
 
 ## Concepts Covered
 
 This project demonstrates several important programming concepts, including:
-- **Variables**: Properties of the `Record` class and other variables in the code.
-- **Methods**: Functions such as `displayRecord` and `loadDataset` showcase how methods are used in TypeScript.
-- **Object-Oriented Programming (OOP)**: The project utilizes the `Record` class to create structured objects from CSV data.
-- **File I/O**: The project demonstrates reading CSV files using Node.js's `fs.createReadStream`.
-- **Exception Handling**: Demonstrates the use of `try/catch` blocks and error handling in Promises.
-- **API Library**: The project uses the `csv-parse` library to parse CSV files and the `picocolors` library for terminal output styling.
-- **Loop Structures**: The `.forEach()` method is used to loop over arrays of records and display their details.
+- **Variables**: Used throughout the program for user inputs, file paths, record data, etc.
+- **Methods**: Functions such as `runProgram`, `loadDataset`, and `displayRecord` handle different parts of the program logic.
+- **Object-Oriented Programming (OOP)**: The project utilizes a `Record` class to create structured objects from CSV data.
+- **File I/O**: Reads from and writes to CSV files using Node.js's File System API.
+- **Exception Handling**: Handles potential errors during file loading, processing, and saving.
+- **API Library**: Uses `csv-parse` for parsing CSV files and `picocolors` for terminal output styling.
+- **Loop Structures**: The `.forEach()` method is used to loop over records and handle user inputs.
+- **Decision Structures**: Uses `switch` statements for menu-based user interaction.
 
 ---
 
@@ -105,8 +106,6 @@ Ensure that the following are installed:
 
 ## Running the Program
 
-To run the program and output the records from the dataset:
-
 1. **Start the program**:
 
    Use the following command to run the program with TypeScript using `ts-node`:
@@ -118,7 +117,7 @@ To run the program and output the records from the dataset:
    This command will:
    - Read and parse the `keystone-throughput-and-capacity.csv` file using **csv-parse**.
    - Convert each row into a `Record` object.
-   - Output the records to the console, with the author's name (`Harmeet Matharoo - CST8333 Project`) appearing every 10 records.
+   - Output the records to the console, with the author's name (`Harmeet Matharoo - CST8333 Project`) appearing after every menu display.
 
 2. **Build the program**:
 
@@ -128,7 +127,7 @@ To run the program and output the records from the dataset:
    npm run build
    ```
 
-   This command will transpile the TypeScript code into JavaScript and output the compiled files in the `dist/` folder (or as configured in the `tsconfig.json`).
+   This command will transpile the TypeScript code into JavaScript and output the compiled files in the `dist/` folder.
 
    Once the project is built, run the compiled JavaScript files with:
 
@@ -141,8 +140,22 @@ To run the program and output the records from the dataset:
 ## Example Output
 
 ```bash
+--- Menu ---
+1. Display all records
+2. Create new record
+3. Update a record
+4. Delete a record
+5. Reload dataset
+6. Save dataset to file
+7. Exit
+
 Harmeet Matharoo - CST8333 Project
+
+Choose an option: 1
+
 Record 1:
+
+Record:
 Date: 2024-06-01
 Month: 6
 Year: 2024
@@ -161,7 +174,6 @@ Nameplate Capacity (1000 m3/d): 0
 Available Capacity (1000 m3/d): 98.39
 Reason For Variance: Capacity may vary month to month based on CER Regulatory Directive, Downstream Restrictions, Curtailment/Interruptions, Force Majeure and System Operating Factor
 
---- Harmeet Matharoo - CST8333 Project ---
 ```
 
 ---
