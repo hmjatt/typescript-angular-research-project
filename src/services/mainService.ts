@@ -12,39 +12,52 @@ import pc from 'picocolors';  // External library for colorized output in the te
  * @remarks
  * This function orchestrates the main user interaction, reading and writing the dataset as needed. It includes options
  * for displaying records, creating, updating, and deleting records, reloading the dataset, and saving the dataset back to disk.
+ * 
+ * The program demonstrates several important programming concepts:
+ * - **Variables**: Manages the `records` array and other input/output variables.
+ * - **Methods/Functions**: Includes various helper methods to perform user tasks.
+ * - **Loop Structures**: Uses the `.forEach()` method to iterate over the `records` array.
+ * - **File I/O**: Reads from the dataset CSV using the `loadDataset` method, and writes data back to a file using `fs.writeFileSync`.
+ * - **Exception Handling**: Implements error handling using `try/catch` blocks.
+ * - **API Library**: Uses external libraries like `picocolors` for terminal output styling and `readline` for command-line interaction.
+ * - **Data Structures**: Utilizes arrays to store `Record` objects in memory.
+ * - **Decision Structures**: Uses the `switch` statement to handle menu options.
  *
- * **Key Concepts**:
- * - **Variables**: Stores dataset as an array of `Record` objects and interacts with user inputs.
- * - **File I/O**: Loads and saves the dataset using Node.js `fs` module.
- * - **Looping**: Iterates over the records to display them and handle menu options.
- * - **API Library**: Uses `picocolors` for colored terminal output, and `readline` for interactive command-line input.
- *
- * @see {@link https://csv.js.org/parse csv-parse Documentation} for more details on CSV parsing.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach forEach Documentation} for array looping.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch try/catch Documentation} for error handling.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch switch Documentation} for decision structures.
+ * @see {@link https://csv.js.org/parse csv-parse Documentation} for more details on CSV parsing.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach Array.forEach Documentation} for array iteration.
  * @see {@link https://nodejs.org/api/fs.html Node.js File System API} for handling file I/O.
  * @see {@link https://github.com/alexeyraspopov/picocolors Picocolors Documentation} for terminal string styling.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/console/log console.log()} for printing output in the terminal.
+ * @see {@link https://nodejs.org/api/readline.html Node.js readline API} for interactive user input.
  * 
- *
  * @param {string} filePath - The path to the CSV file to load.
  * @returns {Promise<void>} A promise that resolves when the program completes its execution.
  *
+ * @throws {Error} If there is an issue loading or saving the dataset.
+ * 
  * @example
  * ```ts
  * runProgram('./src/keystone-throughput-and-capacity.csv')
  *   .catch(error => console.error(error));  // Handle any errors thrown during execution
  * ```
  * 
- * @throws {Error} If there is an issue loading the dataset.
- * 
  * @author Harmeet Matharoo
  */
 export async function runProgram(filePath: string): Promise<void> {
     console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));  // Display author's name at program start
 
-    // Load initial dataset from CSV
-    let records: Record[] = await loadDataset(filePath); 
+    let records: Record[];
+
+    // Exception Handling: Ensure the dataset is loaded correctly
+    try {
+        // Load initial dataset from CSV
+        records = await loadDataset(filePath);
+    } catch (error) {
+        console.error(pc.red(`Error loading dataset: ${(error instanceof Error) ? error.message : 'Unknown error'}`));
+        return;
+    }
 
     // Create an interface for user input
     const rl = readline.createInterface({
@@ -54,21 +67,28 @@ export async function runProgram(filePath: string): Promise<void> {
 
     /**
      * Displays a menu of options for the user and handles user input.
+     * After the menu is displayed, the author's name is shown for visibility.
+     * 
      * @returns {void}
      */
     const showMenu = (): void => {
         console.log(`
-        --- Menu ---
-        1. Display all records
-        2. Create new record
-        3. Update a record
-        4. Delete a record
-        5. Reload dataset
-        6. Save dataset to file
-        7. Exit
-        `);
+    --- Menu ---
+    1. Display all records
+    2. Create new record
+    3. Update a record
+    4. Delete a record
+    5. Reload dataset
+    6. Save dataset to file
+    7. Exit
+    `);
+
+        // Display author's name at the end of the menu
+        console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));
+
         rl.question("Choose an option: ", handleMenuInput);
     };
+
 
     /**
      * Handles the user's menu selection and performs the corresponding action.
@@ -111,6 +131,11 @@ export async function runProgram(filePath: string): Promise<void> {
 
     /**
      * Prompts the user for new record details, creates a new `Record` object, and adds it to the in-memory dataset.
+     * 
+     * @remarks
+     * This method collects data via user input, creates a new record using the Record class, and adds it to the array of records.
+     * Demonstrates variables and methods in action.
+     * 
      * @returns {void}
      */
     const createRecord = (): void => {
@@ -137,8 +162,8 @@ export async function runProgram(filePath: string): Promise<void> {
                 parseFloat(data[15]),   // AvailableCapacity (number)
                 data[16]               // ReasonForVariance
             );
-            
-            records.push(newRecord);
+
+            records.push(newRecord);  // Add to array (Data Structure: Array)
             console.log(pc.green("Record added successfully!"));
             showMenu();
         });
@@ -146,6 +171,10 @@ export async function runProgram(filePath: string): Promise<void> {
 
     /**
      * Prompts the user for a record number and updated details, then updates the specified record.
+     * 
+     * @remarks
+     * This method allows the user to modify a specific record's details, demonstrating variables, methods, and decision-making structures.
+     * 
      * @returns {void}
      */
     const updateRecord = (): void => {
@@ -188,6 +217,10 @@ export async function runProgram(filePath: string): Promise<void> {
 
     /**
      * Prompts the user for a record number and deletes the specified record from the in-memory dataset.
+     * 
+     * @remarks
+     * This method demonstrates array manipulation, allowing the user to delete records from memory.
+     * 
      * @returns {void}
      */
     const deleteRecord = (): void => {
@@ -198,7 +231,7 @@ export async function runProgram(filePath: string): Promise<void> {
                 showMenu();
                 return;
             }
-            records.splice(index, 1);
+            records.splice(index, 1);  // Remove the record from array
             console.log(pc.green("Record deleted successfully!"));
             showMenu();
         });
@@ -209,8 +242,12 @@ export async function runProgram(filePath: string): Promise<void> {
      * @returns {Promise<void>} A promise that resolves when the dataset has been reloaded.
      */
     const reloadDataset = async (): Promise<void> => {
-        records = await loadDataset(filePath);
-        console.log(pc.green("Dataset reloaded successfully!"));
+        try {
+            records = await loadDataset(filePath);  // File I/O: Reload dataset from CSV
+            console.log(pc.green("Dataset reloaded successfully!"));
+        } catch (error) {
+            console.error(pc.red(`Error reloading dataset: ${(error instanceof Error) ? error.message : 'Unknown error'}`));
+        }
         showMenu();
     };
 
@@ -219,10 +256,14 @@ export async function runProgram(filePath: string): Promise<void> {
      * @returns {void}
      */
     const saveDataset = (): void => {
-        const outputFile = './src/updated_dataset.csv';
-        const csvData = records.map(record => Object.values(record).join(',')).join('\n');
-        fs.writeFileSync(outputFile, csvData);
-        console.log(pc.green(`Dataset saved to ${outputFile}`));
+        try {
+            const outputFile = './src/updated_dataset.csv';
+            const csvData = records.map(record => Object.values(record).join(',')).join('\n');
+            fs.writeFileSync(outputFile, csvData);  // File I/O: Save dataset to CSV
+            console.log(pc.green(`Dataset saved to ${outputFile}`));
+        } catch (error) {
+            console.error(pc.red(`Error saving dataset: ${(error instanceof Error) ? error.message : 'Unknown error'}`));
+        }
         showMenu();
     };
 
