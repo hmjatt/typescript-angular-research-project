@@ -43,13 +43,13 @@ import pc from 'picocolors';  // Picocolors library for adding color to terminal
  * @author Harmeet Matharoo
  */
 export function displayRecord(record: Record): void {
-    // Helper function to handle missing values
+    // Helper function to handle missing values, but allow `0` as a valid value
     const formatValue = (value: any) => {
-        return value === null || value === undefined || value === '' || value === 0 ? 'N/A' : value;
+        return value === null || value === undefined || value === '' ? 'N/A' : value;
     };
 
     console.log(pc.yellow(`\nRecord:`));
-    console.log(pc.blue('Date:'), pc.green(record.Date ?? 'N/A'));
+    console.log(pc.blue('Date:'), pc.green(formatValue(record.Date)));
     console.log(pc.blue('Month:'), pc.green(formatValue(record.Month)));
     console.log(pc.blue('Year:'), pc.green(formatValue(record.Year)));
     console.log(pc.blue('Company:'), pc.green(formatValue(record.Company)));
@@ -65,5 +65,6 @@ export function displayRecord(record: Record): void {
     console.log(pc.blue('Uncommitted Volumes (1000 m3/d):'), pc.green(formatValue(record.UncommittedVolumes)));
     console.log(pc.blue('Nameplate Capacity (1000 m3/d):'), pc.green(formatValue(record.NameplateCapacity)));
     console.log(pc.blue('Available Capacity (1000 m3/d):'), pc.green(formatValue(record.AvailableCapacity)));
-    console.log(pc.blue('Reason For Variance:'), pc.green(formatValue(record.ReasonForVariance) || 'N/A'));
+    console.log(pc.blue('Reason For Variance:'), pc.green(formatValue(record.ReasonForVariance)));
 }
+
