@@ -63,7 +63,7 @@ export async function loadDataset(filePath: string): Promise<Record[]> {
         });
 
         readStream
-            .pipe(parse({ delimiter: ',' }))
+            .pipe(parse({ delimiter: ',', from_line: 2 }))
             .on('data', (row) => {
                 const record = new Record(
                     row[0],      // Date
