@@ -277,8 +277,50 @@ export async function runProgram(filePath: string): Promise<void> {
     const saveDataset = (): void => {
         try {
             const outputFile = './src/updated_dataset.csv';
-            const csvData = records.map(record => Object.values(record).join(',')).join('\n');
-            fs.writeFileSync(outputFile, csvData);  // File I/O: Save dataset to CSV
+
+            // Step 1: Define the headers as an array
+            const headers = [
+                'Date',
+                'Month',
+                'Year',
+                'Company',
+                'Pipeline',
+                'Key Point',
+                'Latitude',
+                'Longitude',
+                'Direction Of Flow',
+                'Trade Type',
+                'Product',
+                'Throughput (1000 m3/d)',
+                'Committed Volumes (1000 m3/d)',
+                'Uncommitted Volumes (1000 m3/d)',
+                'Nameplate Capacity (1000 m3/d)',
+                'Available Capacity (1000 m3/d)',
+                'Reason For Variance'
+            ];
+
+            // Step 2: Convert the headers array to a CSV string
+            const headerLine = headers.join(',');
+
+            // Step 3: Convert the records to CSV lines
+            const csvDataLines = records.map(record => {
+                // Handle fields that might contain commas by wrapping them in quotes
+                return Object.values(record).map(value => {
+                    if (typeof value === 'string' && value.includes(',')) {
+                        // Escape double quotes by replacing " with ""
+                        const escapedValue = value.replace(/"/g, '""');
+                        return `"${escapedValue}"`;
+                    } else {
+                        return value;
+                    }
+                }).join(',');
+            });
+
+            // Combine the header and data lines
+            const csvContent = [headerLine, ...csvDataLines].join('\n');
+
+            // Write the CSV content to the file
+            fs.writeFileSync(outputFile, csvContent);
             console.log(pc.green(`Dataset saved to ${outputFile}`));
         } catch (error) {
             console.error(pc.red(`Error saving dataset: ${(error instanceof Error) ? error.message : 'Unknown error'}`));
