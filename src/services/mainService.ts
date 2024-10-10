@@ -4,6 +4,8 @@ import { Record } from '../models/Record';
 import readline from 'readline'; // Used for interactive terminal input
 import fs from 'fs';  // File system to save new CSV files
 import pc from 'picocolors';  // External library for colorized output in the terminal
+import { parse } from 'csv-parse';
+
 
 /**
  * Handles the main program logic of loading the dataset and interacting with the user.
@@ -138,34 +140,53 @@ export async function runProgram(filePath: string): Promise<void> {
      */
     const createRecord = (): void => {
         rl.question("Enter record details (comma-separated values for all fields): ", (input) => {
-            const data = input.split(',');
+            parse(input, { delimiter: ',', relax_quotes: true }, (err, output) => {
+                if (err) {
+                    console.error(pc.red('Error parsing input. Please try again.'));
+                    showMenu();
+                    return;
+                }
 
-            // Create a new Record object with the user's input
-            const newRecord = new Record(
-                data[0],               // Date
-                parseInt(data[1]),      // Month (number)
-                parseInt(data[2]),      // Year (number)
-                data[3],               // Company
-                data[4],               // Pipeline
-                data[5],               // Key Point
-                parseFloat(data[6]),    // Latitude (number)
-                parseFloat(data[7]),    // Longitude (number)
-                data[8],               // DirectionOfFlow
-                data[9],               // TradeType
-                data[10],              // Product
-                parseFloat(data[11]),   // Throughput (number)
-                parseFloat(data[12]),   // CommittedVolumes (number)
-                parseFloat(data[13]),   // UncommittedVolumes (number)
-                parseFloat(data[14]),   // NameplateCapacity (number)
-                parseFloat(data[15]),   // AvailableCapacity (number)
-                data[16]               // ReasonForVariance
-            );
+                const data = output[0]; // Parsed array of values
 
-            records.push(newRecord);  // Add to array (Data Structure: Array)
-            console.log(pc.green("Record added successfully!"));
-            showMenu();
+                if (data.length < 17) {
+                    console.error(pc.red('Insufficient data provided. Please enter all 17 fields.'));
+                    showMenu();
+                    return;
+                }
+
+                // Proceed to create the Record object
+                try {
+                    const newRecord = new Record(
+                        data[0],               // Date
+                        parseInt(data[1]),      // Month (number)
+                        parseInt(data[2]),      // Year (number)
+                        data[3],               // Company
+                        data[4],               // Pipeline
+                        data[5],               // Key Point
+                        parseFloat(data[6]),    // Latitude (number)
+                        parseFloat(data[7]),    // Longitude (number)
+                        data[8],               // DirectionOfFlow
+                        data[9],               // TradeType
+                        data[10],              // Product
+                        parseFloat(data[11]),   // Throughput (number)
+                        parseFloat(data[12]),   // CommittedVolumes (number)
+                        parseFloat(data[13]),   // UncommittedVolumes (number)
+                        parseFloat(data[14]),   // NameplateCapacity (number)
+                        parseFloat(data[15]),   // AvailableCapacity (number)
+                        data[16]               // ReasonForVariance
+                    );
+
+                    records.push(newRecord);
+                    console.log(pc.green("Record added successfully!"));
+                } catch (e) {
+                    console.error(pc.red('Error creating record. Please ensure all fields are entered correctly.'));
+                }
+                showMenu();
+            });
         });
     };
+
 
     /**
      * Prompts the user for a record number and updated details, then updates the specified record.
