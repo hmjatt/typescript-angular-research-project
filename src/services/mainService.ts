@@ -1,91 +1,361 @@
+// src/services/mainService.ts
 import { loadDataset } from './datasetService';  // Importing loadDataset function for reading CSV data
 import { displayRecord } from '../utils/displayUtils'; // Function to display each record in a formatted manner
-import pc from 'picocolors';  // External library used for colorized output in the terminal
+import { Record } from '../models/Record';
+import readline from 'readline'; // Used for interactive terminal input
+import fs from 'fs';  // File system to save new CSV files
+import pc from 'picocolors';  // External library for colorized output in the terminal
+import { parse } from 'csv-parse';
 
 /**
- * Handles the main program logic of loading the dataset and printing the records.
- * 
- * This function demonstrates several important programming concepts:
- * - **Variables**: Variables like `records` and `index` store data and track the record count.
- * - **Methods/Functions**: The `runProgram` function performs actions like loading the dataset and displaying each record.
- * - **Loops**: The `.forEach()` method iterates over each record in the dataset.
- * - **File I/O**: Uses the `loadDataset` function (from another module) to read CSV data from a file.
- * - **Exception Handling**: The function uses `try/catch` to handle potential errors during file loading or record display.
- * - **API Library**: `picocolors` is used for styling terminal output (e.g., colors).
- * 
+ * Handles the main program logic of loading the dataset and interacting with the user.
+ * The user can view, create, update, and delete records in memory, and save the dataset back to a CSV file.
+ *
  * @remarks
- * The function reads data from a CSV file asynchronously, and for every 10 records printed, it displays the author's name for visibility. It handles errors gracefully and prints an appropriate message when the dataset cannot be loaded.
+ * This function orchestrates the main user interaction, reading and writing the dataset as needed. It includes options
+ * for displaying records, creating, updating, and deleting records, reloading the dataset, and saving the dataset back to disk.
  * 
- * **Key Concepts**:
- * 1. **Variables**: `records` stores the data, and `index` tracks which record is being displayed.
- * 2. **Methods**: The `runProgram` method is a reusable function that orchestrates the entire process of loading and displaying the dataset.
- * 3. **Loop Structure**: The `.forEach()` method loops over each `record` in the dataset and processes it.
- * 4. **File I/O**: The `loadDataset` function reads a CSV file using a stream and returns an array of records.
- * 5. **Exception Handling**: `try/catch` is used to handle any potential errors during file reading or data display.
- * 6. **API Library**: The `picocolors` library is used to add colors to the terminal output for better visibility.
- * 
- * @see {@link https://csv.js.org/parse csv-parse Documentation} for more details on CSV parsing.
- * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach forEach Documentation} for array looping.
+ * The program demonstrates several important programming concepts:
+ * - **Variables**: Manages the `records` array and other input/output variables.
+ * - **Methods/Functions**: Includes various helper methods to perform user tasks.
+ * - **Loop Structures**: Uses the `.forEach()` method to iterate over the `records` array.
+ * - **File I/O**: Reads from the dataset CSV using the `loadDataset` method, and writes data back to a file using `fs.writeFileSync`.
+ * - **Exception Handling**: Implements error handling using `try/catch` blocks.
+ * - **API Library**: Uses external libraries like `picocolors` for terminal output styling and `readline` for command-line interaction.
+ * - **Data Structures**: Utilizes arrays to store `Record` objects in memory.
+ * - **Decision Structures**: Uses the `switch` statement to handle menu options.
+ *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch try/catch Documentation} for error handling.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/switch switch Documentation} for decision structures.
+ * @see {@link https://csv.js.org/parse csv-parse Documentation} for more details on CSV parsing.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach Array.forEach Documentation} for array iteration.
  * @see {@link https://nodejs.org/api/fs.html Node.js File System API} for handling file I/O.
  * @see {@link https://github.com/alexeyraspopov/picocolors Picocolors Documentation} for terminal string styling.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/console/log console.log()} for printing output in the terminal.
+ * @see {@link https://nodejs.org/api/readline.html Node.js readline API} for interactive user input.
  * 
- * @param {string} filePath - The path to the CSV file.
- * @returns {Promise<void>} A promise that resolves when the program finishes execution.
- * 
- * @throws {Error} If the dataset cannot be loaded or processed.
+ * @param {string} filePath - The path to the CSV file to load.
+ * @returns {Promise<Record[]>} A promise that resolves with the updated records when the program exits.
+ *
+ * @throws {Error} If there is an issue loading or saving the dataset.
  * 
  * @example
  * ```ts
  * runProgram('./src/keystone-throughput-and-capacity.csv')
+ *   .then(records => {
+ *     // Do something with the records after the program exits
+ *   })
  *   .catch(error => console.error(error));  // Handle any errors thrown during execution
  * ```
  * 
  * @author Harmeet Matharoo
  */
-export async function runProgram(filePath: string): Promise<void> {
-    // Display the author's name in a colorized format at the beginning of the output
-    console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));
-    console.log();  // Blank line for better formatting
+export async function runProgram(filePath: string): Promise<Record[]> {
+    let records: Record[];
 
+    // Exception Handling: Ensure the dataset is loaded correctly
     try {
-        // FILE I/O:
-        // Load records from the CSV file by calling the loadDataset function.
-        // The result is an array of `Record` objects.
-        const records = await loadDataset(filePath);
-
-        // LOOP STRUCTURE:
-        // Loop through the array of records. `.forEach()` applies the given function to each element.
-        records.forEach((record, index) => {
-            // VARIABLES:
-            // The `index` variable tracks which record we are currently on in the dataset.
-
-            // Display the current record's details using the displayRecord function.
-            // This function formats the output for better readability.
-            console.log(pc.yellow(`\nRecord ${index + 1}:`));
-            displayRecord(record);  // Call a separate function to handle the display logic
-
-            console.log();  // Insert a blank line after each record for better formatting
-
-            // Every 10th record, print the author's name again for visibility
-            if ((index + 1) % 10 === 0) {
-                console.log(pc.bold(pc.bgCyanBright("--- Output every 10th line -> Harmeet Matharoo - CST8333 Project ---")));
-            }
-        });
-
-        console.log();  // Blank line for better formatting
-
-        // End of program: Display the author's name again to mark the end
-        console.log(pc.bold(pc.bgCyanBright("--- Harmeet Matharoo - CST8333 Project ---")));
-
+        // Load initial dataset from CSV
+        records = await loadDataset(filePath);
     } catch (error) {
-        // EXCEPTION HANDLING:
-        // If any error occurs during the execution (e.g., loading the dataset), it will be caught here.
-        if (error instanceof Error) {
-            console.error(pc.red(`Failed to load dataset: ${error.message}`));  // Display error message in red
-        } else {
-            console.error(pc.red('An unknown error occurred.'));  // Generic error message if the error is not an instance of Error
-        }
+        console.error(pc.red(`Error loading dataset: ${(error instanceof Error) ? error.message : 'Unknown error'}`));
+        return [];
     }
+
+    // Create an interface for user input
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    // Wrap the main program in a Promise to ensure the tests can await its completion
+    return new Promise<Record[]>((resolve, reject) => {
+        /**
+         * Displays a menu of options for the user and handles user input.
+         * After the menu is displayed, the author's name is shown for visibility.
+         * 
+         * @returns {void}
+         */
+        const showMenu = (): void => {
+            console.log(`
+        --- Menu ---
+        1. Display all records
+        2. Create new record
+        3. Update a record
+        4. Delete a record
+        5. Reload dataset
+        6. Save dataset to file
+        7. Exit
+        `);
+
+            // Display author's name at the end of the menu
+            console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));
+
+            rl.question("\nChoose an option: ", handleMenuInput);
+        };
+
+        /**
+         * Handles the user's menu selection and performs the corresponding action.
+         * @param {string} choice - The user's menu choice.
+         * @returns {void}
+         */
+        const handleMenuInput = (choice: string): void => {
+            switch (choice) {
+                case '1':  // Display all records
+                    records.forEach((record, index) => {
+                        console.log(pc.yellow(`\nRecord ${index + 1}:`));
+                        displayRecord(record);
+                    });
+                    showMenu();
+                    break;
+                case '2':  // Create a new record
+                    createRecord();
+                    break;
+                case '3':  // Update an existing record
+                    updateRecord();
+                    break;
+                case '4':  // Delete a record
+                    deleteRecord();
+                    break;
+                case '5':  // Reload the dataset
+                    reloadDataset();
+                    break;
+                case '6':  // Save the dataset to a file
+                    saveDataset();
+                    break;
+                case '7':  // Exit the program
+                    rl.close();
+                    break;
+                default:
+                    console.log(pc.red('Invalid choice!'));
+                    showMenu();
+                    break;
+            }
+        };
+
+        /**
+         * Prompts the user for new record details, creates a new `Record` object, and adds it to the in-memory dataset.
+         * 
+         * @remarks
+         * This method collects data via user input, creates a new record using the Record class, and adds it to the array of records.
+         * Demonstrates variables and methods in action.
+         * 
+         * @returns {void}
+         */
+        const createRecord = (): void => {
+            rl.question("Enter record details (comma-separated values for all fields): ", (input) => {
+                parse(input, { delimiter: ',', relax_quotes: true }, (err, output) => {
+                    if (err) {
+                        console.error(pc.red('Error parsing input. Please try again.'));
+                        showMenu();
+                        return;
+                    }
+
+                    const data = output[0]; // Parsed array of values
+
+                    if (data.length < 17) {
+                        console.error(pc.red('Insufficient data provided. Please enter all 17 fields.'));
+                        showMenu();
+                        return;
+                    }
+
+                    // Proceed to create the Record object
+                    try {
+                        const newRecord = new Record(
+                            data[0],               // Date
+                            parseInt(data[1]),      // Month (number)
+                            parseInt(data[2]),      // Year (number)
+                            data[3],               // Company
+                            data[4],               // Pipeline
+                            data[5],               // Key Point
+                            parseFloat(data[6]),    // Latitude (number)
+                            parseFloat(data[7]),    // Longitude (number)
+                            data[8],               // DirectionOfFlow
+                            data[9],               // TradeType
+                            data[10],              // Product
+                            parseFloat(data[11]),   // Throughput (number)
+                            parseFloat(data[12]),   // CommittedVolumes (number)
+                            parseFloat(data[13]),   // UncommittedVolumes (number)
+                            parseFloat(data[14]),   // NameplateCapacity (number)
+                            parseFloat(data[15]),   // AvailableCapacity (number)
+                            data[16]               // ReasonForVariance
+                        );
+
+                        records.push(newRecord);
+                        console.log(pc.green("Record added successfully!"));
+                    } catch (e) {
+                        console.error(pc.red('Error creating record. Please ensure all fields are entered correctly.'));
+                    }
+                    showMenu();
+                });
+            });
+        };
+
+        /**
+         * Prompts the user for a record number and updated details, then updates the specified record.
+         * 
+         * @remarks
+         * This method allows the user to modify a specific record's details, demonstrating variables, methods, and decision-making structures.
+         * 
+         * @returns {void}
+         */
+        const updateRecord = (): void => {
+            rl.question("Enter the record number to update: ", (input) => {
+                const index = parseInt(input) - 1;
+                if (index < 0 || index >= records.length) {
+                    console.log(pc.red("Invalid record number!"));
+                    showMenu();
+                    return;
+                }
+                rl.question("Enter updated details (comma-separated values): ", (updatedData) => {
+                    parse(updatedData, { delimiter: ',', relax_quotes: true }, (err, output) => {
+                        if (err) {
+                            console.error(pc.red('Error parsing input. Please try again.'));
+                            showMenu();
+                            return;
+                        }
+
+                        const data = output[0]; // Parsed array of values
+
+                        if (data.length < 17) {
+                            console.error(pc.red('Insufficient data provided. Please enter all 17 fields.'));
+                            showMenu();
+                            return;
+                        }
+
+                        // Update the record in memory
+                        try {
+                            records[index] = new Record(
+                                data[0],               // Date
+                                parseInt(data[1]),      // Month (number)
+                                parseInt(data[2]),      // Year (number)
+                                data[3],               // Company
+                                data[4],               // Pipeline
+                                data[5],               // Key Point
+                                parseFloat(data[6]),    // Latitude (number)
+                                parseFloat(data[7]),    // Longitude (number)
+                                data[8],               // DirectionOfFlow
+                                data[9],               // TradeType
+                                data[10],              // Product
+                                parseFloat(data[11]),   // Throughput (number)
+                                parseFloat(data[12]),   // CommittedVolumes (number)
+                                parseFloat(data[13]),   // UncommittedVolumes (number)
+                                parseFloat(data[14]),   // NameplateCapacity (number)
+                                parseFloat(data[15]),   // AvailableCapacity (number)
+                                data[16]               // ReasonForVariance
+                            );
+
+                            console.log(pc.green("Record updated successfully!"));
+                        } catch (e) {
+                            console.error(pc.red('Error updating record. Please ensure all fields are entered correctly.'));
+                        }
+                        showMenu();
+                    });
+                });
+            });
+        };
+
+        /**
+         * Prompts the user for a record number and deletes the specified record from the in-memory dataset.
+         * 
+         * @remarks
+         * This method demonstrates array manipulation, allowing the user to delete records from memory.
+         * 
+         * @returns {void}
+         */
+        const deleteRecord = (): void => {
+            rl.question("Enter the record number to delete: ", (input) => {
+                const index = parseInt(input) - 1;
+                if (index < 0 || index >= records.length) {
+                    console.log(pc.red("Invalid record number!"));
+                    showMenu();
+                    return;
+                }
+                records.splice(index, 1);  // Remove the record from array
+                console.log(pc.green("Record deleted successfully!"));
+                showMenu();
+            });
+        };
+
+        /**
+         * Reloads the dataset from the CSV file, replacing the in-memory data.
+         * @returns {Promise<void>} A promise that resolves when the dataset has been reloaded.
+         */
+        const reloadDataset = async (): Promise<void> => {
+            try {
+                records = await loadDataset(filePath);  // File I/O: Reload dataset from CSV
+                console.log(pc.green("Dataset reloaded successfully!"));
+            } catch (error) {
+                console.error(pc.red(`Error reloading dataset: ${(error instanceof Error) ? error.message : 'Unknown error'}`));
+            }
+            showMenu();
+        };
+
+        /**
+         * Saves the current in-memory dataset to a new CSV file on disk.
+         * @returns {void}
+         */
+        const saveDataset = (): void => {
+            try {
+                const outputFile = './src/updated_dataset.csv';
+
+                // Step 1: Define the headers as an array
+                const headers = [
+                    'Date',
+                    'Month',
+                    'Year',
+                    'Company',
+                    'Pipeline',
+                    'Key Point',
+                    'Latitude',
+                    'Longitude',
+                    'Direction Of Flow',
+                    'Trade Type',
+                    'Product',
+                    'Throughput (1000 m3/d)',
+                    'Committed Volumes (1000 m3/d)',
+                    'Uncommitted Volumes (1000 m3/d)',
+                    'Nameplate Capacity (1000 m3/d)',
+                    'Available Capacity (1000 m3/d)',
+                    'Reason For Variance'
+                ];
+
+                // Step 2: Convert the headers array to a CSV string
+                const headerLine = headers.join(',');
+
+                // Step 3: Convert the records to CSV lines
+                const csvDataLines = records.map(record => {
+                    // Handle fields that might contain commas by wrapping them in quotes
+                    return Object.values(record).map(value => {
+                        if (typeof value === 'string' && value.includes(',')) {
+                            // Escape double quotes by replacing " with ""
+                            const escapedValue = value.replace(/"/g, '""');
+                            return `"${escapedValue}"`;
+                        } else {
+                            return value;
+                        }
+                    }).join(',');
+                });
+
+                // Combine the header and data lines
+                const csvContent = [headerLine, ...csvDataLines].join('\n');
+
+                // Write the CSV content to the file
+                fs.writeFileSync(outputFile, csvContent);
+                console.log(pc.green(`Dataset saved to ${outputFile}`));
+            } catch (error) {
+                console.error(pc.red(`Error saving dataset: ${(error instanceof Error) ? error.message : 'Unknown error'}`));
+            }
+            showMenu();
+        };
+
+        // Override rl.close to resolve the promise when the program exits
+        const originalRlClose = rl.close.bind(rl);
+        rl.close = () => {
+            originalRlClose();
+            resolve(records); // Resolve the promise with the current records
+        };
+
+        showMenu();  // Start the user interaction by displaying the menu
+    });
 }

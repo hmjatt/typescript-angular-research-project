@@ -54,44 +54,45 @@ export async function loadDataset(filePath: string): Promise<Record[]> {
     // RETURNING A PROMISE:
     // A Promise allows asynchronous code (like reading a file) to be handled cleanly.
     return new Promise((resolve, reject) => {
-        // FILE I/O: Reading the file using a stream, which means we don't load the entire file into memory at once.
-        fs.createReadStream(filePath)  // Create a stream to read the file from disk
-            .pipe(parse({ delimiter: ',' }))  // PIPELINE: Data is passed through `csv-parse` to break it into rows
-            .on('data', (row) => {  // LOOP: For each row of data read from the file, this function is executed
-                // Create a new Record object with values from the CSV row.
+        const readStream = fs.createReadStream(filePath);
+
+        // Handle errors from createReadStream (e.g., file not found)
+        readStream.on('error', (err) => {
+            console.error(pc.red(`Error opening file: ${err.message}`));
+            reject(err);
+        });
+
+        readStream
+            .pipe(parse({ delimiter: ',', from_line: 2 }))
+            .on('data', (row) => {
                 const record = new Record(
-                    row[0],  // Date column
-                    +row[1], // Month column (converted to a number)
-                    +row[2], // Year column (converted to a number)
-                    row[3],  // Company column
-                    row[4],  // Pipeline column
-                    row[5],  // KeyPoint column
-                    +row[6], // Latitude (converted to a number)
-                    +row[7], // Longitude (converted to a number)
-                    row[8],  // DirectionOfFlow column
-                    row[9],  // TradeType column
-                    row[10], // Product column
-                    +row[11],// Throughput column (converted to a number)
-                    +row[12],// CommittedVolumes column (converted to a number)
-                    +row[13],// UncommittedVolumes column (converted to a number)
-                    +row[14],// NameplateCapacity column (converted to a number)
-                    +row[15],// AvailableCapacity column (converted to a number)
-                    row[16]  // ReasonForVariance column
+                    row[0],      // Date
+                    +row[1],     // Month
+                    +row[2],     // Year
+                    row[3],      // Company
+                    row[4],      // Pipeline
+                    row[5],      // KeyPoint
+                    +row[6],     // Latitude
+                    +row[7],     // Longitude
+                    row[8],      // DirectionOfFlow
+                    row[9],      // TradeType
+                    row[10],     // Product
+                    +row[11],    // Throughput
+                    +row[12],    // CommittedVolumes
+                    +row[13],    // UncommittedVolumes
+                    +row[14],    // NameplateCapacity
+                    +row[15],    // AvailableCapacity
+                    row[16]      // ReasonForVariance
                 );
-                // Push the record object into the array
                 records.push(record);
             })
-            // ERROR HANDLING:
-            // If an error occurs during file reading or parsing, this function will be called
             .on('error', (err) => {
-                console.error(pc.red(`Error reading file: ${err.message}`));  // Log the error message in red
-                reject(err);  // Reject the promise, signaling that an error occurred
+                console.error(pc.red(`Error parsing file: ${err.message}`));
+                reject(err);
             })
-            // END OF STREAM:
-            // When all the data has been read, this function is called
             .on('end', () => {
-                console.log(pc.green(`Successfully loaded ${records.length} records.`));  // Log success message in green
-                resolve(records);  // Resolve the promise with the array of parsed records
+                console.log(pc.green(`Successfully loaded ${records.length} records.`));
+                resolve(records);
             });
     });
 }
