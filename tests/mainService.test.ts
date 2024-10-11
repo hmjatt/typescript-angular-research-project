@@ -71,8 +71,17 @@ describe('MainService', () => {
         expect(newRecord.Company).toBe('Company B');
         expect(newRecord.Pipeline).toBe('Pipeline Y');
         expect(newRecord.KeyPoint).toBe('Key Point Z');
+        expect(newRecord.Latitude).toBe(48.123);
+        expect(newRecord.Longitude).toBe(-97.456);
+        expect(newRecord.DirectionOfFlow).toBe('south');
+        expect(newRecord.TradeType).toBe('export');
+        expect(newRecord.Product).toBe('oil');
         expect(newRecord.Throughput).toBe(200);
-        // ... additional field checks
+        expect(newRecord.CommittedVolumes).toBe(150);
+        expect(newRecord.UncommittedVolumes).toBe(50);
+        expect(newRecord.NameplateCapacity).toBe(220);
+        expect(newRecord.AvailableCapacity).toBe(200);
+        expect(newRecord.ReasonForVariance).toBe('Variance reason');
     });
 
     /**
@@ -129,8 +138,16 @@ describe('MainService', () => {
         expect(updatedRecord.Pipeline).toBe('Pipeline X Updated');
         expect(updatedRecord.KeyPoint).toBe('Key Point Y Updated');
         expect(updatedRecord.Latitude).toBe(49.123);
+        expect(updatedRecord.Longitude).toBe(-98.456);
+        expect(updatedRecord.DirectionOfFlow).toBe('north');
+        expect(updatedRecord.TradeType).toBe('import');
+        expect(updatedRecord.Product).toBe('gas');
         expect(updatedRecord.Throughput).toBe(150);
-        // ... additional field checks
+        expect(updatedRecord.CommittedVolumes).toBe(100);
+        expect(updatedRecord.UncommittedVolumes).toBe(50);
+        expect(updatedRecord.NameplateCapacity).toBe(130);
+        expect(updatedRecord.AvailableCapacity).toBe(110);
+        expect(updatedRecord.ReasonForVariance).toBe('Updated variance reason');
     });
 
     /**
