@@ -11,13 +11,12 @@ import { Record } from '../src/models/Record';
  * @see {@link ../src/models/Record} for the actual Record class being tested.
  */
 describe('Record', () => {
-    
     /**
      * Test to ensure the Record object is correctly initialized with valid data.
-     * 
+     *
      * This test checks that all properties of the Record object are assigned correctly
      * when a new instance is created.
-     * 
+     *
      * @example
      * ```ts
      * const record = new Record('2024-01-01', 1, 2024, 'Company A', 'Pipeline X', 'Key Point Y', 48.123, -97.456, 'south', 'export', 'oil', 100, 50, 50, 120, 100, 'No variance');
@@ -27,22 +26,22 @@ describe('Record', () => {
      */
     it('should correctly initialize the Record object with valid data', () => {
         const record = new Record(
-            '2024-01-01', 
-            1, 
-            2024, 
-            'Company A', 
-            'Pipeline X', 
-            'Key Point Y', 
-            48.123, 
-            -97.456, 
-            'south', 
-            'export', 
-            'oil', 
-            100, 
-            50, 
-            50, 
-            120, 
-            100, 
+            '2024-01-01',
+            1,
+            2024,
+            'Company A',
+            'Pipeline X',
+            'Key Point Y',
+            48.123,
+            -97.456,
+            'south',
+            'export',
+            'oil',
+            100,
+            50,
+            50,
+            120,
+            100,
             'No variance'
         );
 
@@ -68,10 +67,10 @@ describe('Record', () => {
 
     /**
      * Test to ensure the Record object handles empty or null values.
-     * 
+     *
      * This test checks that the Record class can handle missing or undefined data
      * by allowing empty strings or null values during instantiation.
-     * 
+     *
      * @example
      * ```ts
      * const record = new Record('', 0, 0, '', '', '', 0, 0, '', '', '', 0, 0, 0, 0, 0, '');
