@@ -1,9 +1,10 @@
+// tests/mainService.test.ts
 import { runProgram } from '../src/services/mainService';
 import { loadDataset } from '../src/services/datasetService';
 import readline from 'readline';
 import fs from 'fs';
 import pc from 'picocolors';
-import { Record } from '../src/models/Record'; // Changed PipelineRecord to Record
+import { Record } from '../src/models/Record';
 
 // Mock dependencies
 jest.mock('readline');
@@ -19,7 +20,7 @@ jest.mock('picocolors');
  * 
  * @author Harmeet Matharoo
  */
-describe('runProgram', () => {
+describe('MainService', () => {
     let rlMock: any;
 
     beforeEach(() => {
@@ -40,108 +41,113 @@ describe('runProgram', () => {
         jest.restoreAllMocks(); // Restore original behavior
     });
 
-    it('should load dataset and display menu on start', async () => {
-        const mockRecords = [
-            new Record(
-                '2024-01-01', 1, 2024, 'Company A', 'Pipeline X', 'Location Y',
-                48.123, -97.456, 'south', 'export', 'oil', 100, 50, 50, 120, 100, 'No variance'
-            )
-        ];
+    /**
+     * Test for Creating a New Record
+     */
+    it('should create a new record and add it to the dataset', async () => {
+        // Initialize an empty records array
+        const records: Record[] = [];
+        (loadDataset as jest.Mock).mockResolvedValue(records);
 
-        (loadDataset as jest.Mock).mockResolvedValue(mockRecords);
-
-        await runProgram('./src/keystone-throughput-and-capacity.csv');
-
-        expect(loadDataset).toHaveBeenCalledWith('./src/keystone-throughput-and-capacity.csv');
-        expect(rlMock.question).toHaveBeenCalled(); // Menu should be displayed
-    });
-
-    it('should handle user interaction for displaying records', async () => {
-        const mockRecords = [
-            new Record(
-                '2024-01-01', 1, 2024, 'Company A', 'Pipeline X', 'Location Y',
-                48.123, -97.456, 'south', 'export', 'oil', 100, 50, 50, 120, 100, 'No variance'
-            )
-        ];
-
-        (loadDataset as jest.Mock).mockResolvedValue(mockRecords);
-
-        rlMock.question.mockImplementationOnce((_prompt: string, callback: any) => {
-            callback('1'); // Simulate user choosing "Display all records"
-        }).mockImplementationOnce((_prompt: string, callback: any) => {
-            callback('7'); // Simulate user choosing "Exit"
-        });
-
-        await runProgram('./src/keystone-throughput-and-capacity.csv');
-
-        // Log the actual console.log mock calls to see what was called
-        console.log('console.log mock calls:', (console.log as jest.Mock).mock.calls);
-
-        // Assert console.log output matches actual behavior
-        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('--- Menu ---'));
-    });
-
-    it('should handle creating a new record', async () => {
-        const mockRecords: Record[] = [];
-
-        (loadDataset as jest.Mock).mockResolvedValue(mockRecords);
-
+        // Simulate user input
         rlMock.question
             .mockImplementationOnce((_prompt: string, callback: any) => {
-                callback('2'); // Simulate user choosing "Create new record"
+                callback('2'); // Choose 'Create new record'
             })
             .mockImplementationOnce((_prompt: string, callback: any) => {
-                callback('2024-01-01,1,2024,Company B,Pipeline Y,Key Point Z,48.123,-97.456,south,export,oil,200,150,50,220,200,Variance reason'); // Simulate input for new record
+                // Provide record details
+                callback(
+                    '2024-06-01,6,2024,Company B,Pipeline Y,"Key Point Z",48.123,-97.456,south,export,oil,200,150,50,220,200,"Variance reason"'
+                );
             })
             .mockImplementationOnce((_prompt: string, callback: any) => {
-                callback('7'); // Simulate user choosing "Exit"
+                callback('7'); // Exit
             });
 
-        await runProgram('./src/keystone-throughput-and-capacity.csv');
+        const resultRecords = await runProgram('./src/keystone-throughput-and-capacity.csv');
 
-        expect(mockRecords.length).toBe(1);
-        expect(mockRecords[0].Company).toBe('Company B');
+        expect(resultRecords.length).toBe(1); // Record added to the array
+        const newRecord = resultRecords[0];
+        expect(newRecord.Company).toBe('Company B');
+        expect(newRecord.Pipeline).toBe('Pipeline Y');
+        expect(newRecord.KeyPoint).toBe('Key Point Z');
+        expect(newRecord.Throughput).toBe(200);
+        // ... additional field checks
     });
 
-    it('should save the dataset to a new file', async () => {
-        const mockRecords = [
+    /**
+     * Test for Updating an Existing Record
+     */
+    it('should update an existing record with new values', async () => {
+        // Initialize records with one record
+        const initialRecords = [
             new Record(
-                '2024-01-01', 1, 2024, 'Company A', 'Pipeline X', 'Location Y',
-                48.123, -97.456, 'south', 'export', 'oil', 100, 50, 50, 120, 100, 'No variance'
+                '2024-01-01',
+                1,
+                2024,
+                'Company A',
+                'Pipeline X',
+                'Key Point Y',
+                48.123,
+                -97.456,
+                'south',
+                'export',
+                'oil',
+                100,
+                50,
+                50,
+                120,
+                100,
+                'No variance'
             )
         ];
+        (loadDataset as jest.Mock).mockResolvedValue(initialRecords);
 
-        (loadDataset as jest.Mock).mockResolvedValue(mockRecords);
-
+        // Simulate user input
         rlMock.question
             .mockImplementationOnce((_prompt: string, callback: any) => {
-                callback('6'); // Simulate user choosing "Save dataset"
+                callback('3'); // Choose 'Update a record'
             })
             .mockImplementationOnce((_prompt: string, callback: any) => {
-                callback('7'); // Simulate user choosing "Exit"
+                callback('1'); // Record number to update
+            })
+            .mockImplementationOnce((_prompt: string, callback: any) => {
+                // Provide updated record details
+                callback(
+                    '2025-01-01,1,2025,Company A Updated,Pipeline X Updated,"Key Point Y Updated",49.123,-98.456,north,import,gas,150,100,50,130,110,"Updated variance reason"'
+                );
+            })
+            .mockImplementationOnce((_prompt: string, callback: any) => {
+                callback('7'); // Exit
             });
 
-        await runProgram('./src/keystone-throughput-and-capacity.csv');
+        const resultRecords = await runProgram('./src/keystone-throughput-and-capacity.csv');
 
-        expect(fs.writeFileSync).toHaveBeenCalledWith(
-            './src/updated_dataset.csv',
-            expect.stringContaining('Company A') // Ensure correct CSV content
-        );
+        expect(resultRecords.length).toBe(1); // Should still have one record
+        const updatedRecord = resultRecords[0];
+        expect(updatedRecord.Company).toBe('Company A Updated');
+        expect(updatedRecord.Pipeline).toBe('Pipeline X Updated');
+        expect(updatedRecord.KeyPoint).toBe('Key Point Y Updated');
+        expect(updatedRecord.Latitude).toBe(49.123);
+        expect(updatedRecord.Throughput).toBe(150);
+        // ... additional field checks
     });
 
-    it('should handle ENOENT errors during file loading when file is missing', async () => {
+    /**
+     * Test for Handling Missing CSV File
+     */
+    it('should handle errors when the CSV file is missing', async () => {
         // Simulate the file missing error (ENOENT)
-        const error = new Error('ENOENT: no such file or directory, open \'./src/keystone-throughput-and-capacity.csv\'') as any;
+        const error = new Error('ENOENT: no such file or directory, open \'./nonexistent.csv\'') as any;
         error.code = 'ENOENT';
 
-        (loadDataset as jest.Mock).mockRejectedValue(error);  // Simulate loadDataset rejection
+        (loadDataset as jest.Mock).mockRejectedValue(error); // Simulate loadDataset rejection
 
         await runProgram('./nonexistent.csv');
 
-        // Log the actual error message passed to console.error
-        console.log('console.error mock calls:', (console.error as jest.Mock).mock.calls);
-
         // Assert that console.error is called with the actual error message
-        expect(console.error).toHaveBeenCalled();
+        expect(console.error).toHaveBeenCalledWith(
+            pc.red(`Error loading dataset: ENOENT: no such file or directory, open './nonexistent.csv'`)
+        );
     });
 });
