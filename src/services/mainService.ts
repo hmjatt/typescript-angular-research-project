@@ -1,7 +1,7 @@
 // src/services/mainService.ts
 import { loadDataset } from './datasetService';  // Importing loadDataset function for reading CSV data
 import { displayRecord } from '../utils/displayUtils'; // Function to display each record in a formatted manner
-import { Record } from '../models/Record';
+import { DetailedRecord } from '../models/DetailedRecord';
 import readline from 'readline'; // Used for interactive terminal input
 import fs from 'fs';  // File system to save new CSV files
 import pc from 'picocolors';  // External library for colorized output in the terminal
@@ -22,7 +22,7 @@ import { parse } from 'csv-parse';
  * - **File I/O**: Reads from the dataset CSV using the `loadDataset` method, and writes data back to a file using `fs.writeFileSync`.
  * - **Exception Handling**: Implements error handling using `try/catch` blocks.
  * - **API Library**: Uses external libraries like `picocolors` for terminal output styling and `readline` for command-line interaction.
- * - **Data Structures**: Utilizes arrays to store `Record` objects in memory.
+ * - **Data Structures**: Utilizes arrays to store `DetailedRecord` objects in memory.
  * - **Decision Structures**: Uses the `switch` statement to handle menu options.
  *
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch try/catch Documentation} for error handling.
@@ -35,7 +35,7 @@ import { parse } from 'csv-parse';
  * @see {@link https://nodejs.org/api/readline.html Node.js readline API} for interactive user input.
  * 
  * @param {string} filePath - The path to the CSV file to load.
- * @returns {Promise<Record[]>} A promise that resolves with the updated records when the program exits.
+ * @returns {Promise<DetailedRecord[]>} A promise that resolves with the updated records when the program exits.
  *
  * @throws {Error} If there is an issue loading or saving the dataset.
  * 
@@ -50,8 +50,8 @@ import { parse } from 'csv-parse';
  * 
  * @author Harmeet Matharoo
  */
-export async function runProgram(filePath: string): Promise<Record[]> {
-    let records: Record[];
+export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
+    let records: DetailedRecord[];
 
     // Exception Handling: Ensure the dataset is loaded correctly
     try {
@@ -69,7 +69,7 @@ export async function runProgram(filePath: string): Promise<Record[]> {
     });
 
     // Wrap the main program in a Promise to ensure the tests can await its completion
-    return new Promise<Record[]>((resolve, reject) => {
+    return new Promise<DetailedRecord[]>((resolve, reject) => {
         /**
          * Displays a menu of options for the user and handles user input.
          * After the menu is displayed, the author's name is shown for visibility.
@@ -134,34 +134,42 @@ export async function runProgram(filePath: string): Promise<Record[]> {
         };
 
         /**
-         * Prompts the user for new record details, creates a new `Record` object, and adds it to the in-memory dataset.
+         * Prompts the user for new record details, creates a new `DetailedRecord` object, and adds it to the in-memory dataset.
          * 
          * @remarks
-         * This method collects data via user input, creates a new record using the Record class, and adds it to the array of records.
+         * This method collects data via user input, creates a new record using the DetailedRecord class, and adds it to the array of records.
          * Demonstrates variables and methods in action.
          * 
          * @returns {void}
          */
         const createRecord = (): void => {
             rl.question("Enter record details (comma-separated values for all fields): ", (input) => {
-                parse(input, { delimiter: ',', relax_quotes: true }, (err, output) => {
+                // Check if the input is empty
+                if (!input.trim()) {
+                    console.error(pc.red('No input provided. Please enter all 17 fields.'));
+                    showMenu();
+                    return;
+                }
+        
+                parse(input, { delimiter: ',', quote: '"', relax_quotes: true }, (err, output) => {
                     if (err) {
                         console.error(pc.red('Error parsing input. Please try again.'));
                         showMenu();
                         return;
                     }
-
+        
                     const data = output[0]; // Parsed array of values
-
-                    if (data.length < 17) {
-                        console.error(pc.red('Insufficient data provided. Please enter all 17 fields.'));
+        
+                    // Check if data array has exactly 17 fields
+                    if (data.length !== 17) {
+                        console.error(pc.red(`Insufficient data provided. Please enter exactly 17 fields. You entered ${data.length}.`));
                         showMenu();
                         return;
                     }
-
-                    // Proceed to create the Record object
+        
+                    // Proceed to create the DetailedRecord object
                     try {
-                        const newRecord = new Record(
+                        const newRecord = new DetailedRecord(
                             data[0],               // Date
                             parseInt(data[1]),      // Month (number)
                             parseInt(data[2]),      // Year (number)
@@ -180,7 +188,7 @@ export async function runProgram(filePath: string): Promise<Record[]> {
                             parseFloat(data[15]),   // AvailableCapacity (number)
                             data[16]               // ReasonForVariance
                         );
-
+        
                         records.push(newRecord);
                         console.log(pc.green("Record added successfully!"));
                     } catch (e) {
@@ -190,7 +198,7 @@ export async function runProgram(filePath: string): Promise<Record[]> {
                 });
             });
         };
-
+        
         /**
          * Prompts the user for a record number and updated details, then updates the specified record.
          * 
@@ -225,7 +233,7 @@ export async function runProgram(filePath: string): Promise<Record[]> {
 
                         // Update the record in memory
                         try {
-                            records[index] = new Record(
+                            records[index] = new DetailedRecord(
                                 data[0],               // Date
                                 parseInt(data[1]),      // Month (number)
                                 parseInt(data[2]),      // Year (number)

@@ -1,10 +1,10 @@
 import fs from 'fs';  // Node.js built-in module for working with files (File I/O)
 import { parse } from 'csv-parse';  // External API library used to parse CSV files
-import { Record } from '../models/Record';  // Importing the Record class from another file
+import { DetailedRecord } from '../models/DetailedRecord';
 import pc from 'picocolors';  // External library for colorized output in the terminal
 
 /**
- * Loads a dataset from a CSV file and returns an array of `Record` objects.
+ * Loads a dataset from a CSV file and returns an array of `DetailedRecord` objects.
  * 
  * This function demonstrates several important programming concepts:
  * - **File I/O**: Uses Node.js's `fs.createReadStream` to read a file.
@@ -19,7 +19,7 @@ import pc from 'picocolors';  // External library for colorized output in the te
  * 
  * **Key Concepts**:
  * 1. **File I/O**: Input/Output operations on files. Here we read a CSV file using streams, which lets us handle large files efficiently without loading everything into memory at once.
- * 2. **Variables**: Used to store data. In this case, `records` is a variable that holds an array of `Record` objects.
+ * 2. **Variables**: Used to store data. In this case, `records` is a variable that holds an array of `DetailedRecord` objects.
  * 3. **Methods**: The `loadDataset` method (or function) is a reusable piece of code that accepts a file path, processes the file, and returns the parsed data.
  * 4. **Loop Structure**: The `.on('data', ...)` is a loop-like structure, which processes each row of the CSV file as it's read.
  * 5. **API Library**: We use `csv-parse` to automatically parse the CSV file into individual rows and columns.
@@ -33,7 +33,7 @@ import pc from 'picocolors';  // External library for colorized output in the te
  * @see {@link https://github.com/alexeyraspopov/picocolors Picocolors Documentation} for terminal string styling.
  *  
  * @param {string} filePath - The path to the CSV file.
- * @returns {Promise<Record[]>} A promise that resolves with an array of `Record` objects created from the CSV file data.
+ * @returns {Promise<DetailedRecord[]>} A promise that resolves with an array of `DetailedRecord` objects created from the CSV file data.
  * 
  * @throws {Error} If the file cannot be read or if parsing fails.
  * 
@@ -46,10 +46,10 @@ import pc from 'picocolors';  // External library for colorized output in the te
  * 
  * @author Harmeet Matharoo
  */
-export async function loadDataset(filePath: string): Promise<Record[]> {
+export async function loadDataset(filePath: string): Promise<DetailedRecord[]> {
     // VARIABLES:
-    // `records` is an array that will store the parsed records (each row of the CSV file will become a Record object)
-    const records: Record[] = [];  // An array to hold the parsed data
+    // `records` is an array that will store the parsed records (each row of the CSV file will become a DetailedRecord object)
+    const records: DetailedRecord[] = [];
 
     // RETURNING A PROMISE:
     // A Promise allows asynchronous code (like reading a file) to be handled cleanly.
@@ -65,7 +65,7 @@ export async function loadDataset(filePath: string): Promise<Record[]> {
         readStream
             .pipe(parse({ delimiter: ',', from_line: 2 }))
             .on('data', (row) => {
-                const record = new Record(
+                const record = new DetailedRecord(
                     row[0],      // Date
                     +row[1],     // Month
                     +row[2],     // Year

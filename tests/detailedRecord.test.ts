@@ -1,31 +1,31 @@
-import { Record } from '../src/models/Record';
+import { DetailedRecord } from '../src/models/DetailedRecord';
 
 /**
- * Unit tests for the Record class.
+ * Unit tests for the DetailedRecord class.
  * 
- * This file tests the functionality of creating a Record object and verifying that
+ * This file tests the functionality of creating a DetailedRecord object and verifying that
  * all properties are correctly assigned by the constructor.
  * 
  * @author Harmeet Matharoo
  * 
- * @see {@link ../src/models/Record} for the actual Record class being tested.
+ * @see {@link ../src/models/DetailedRecord} for the actual DetailedRecord class being tested.
  */
-describe('Record', () => {
+describe('DetailedRecord', () => {
     /**
-     * Test to ensure the Record object is correctly initialized with valid data.
+     * Test to ensure the DetailedRecord object is correctly initialized with valid data.
      *
-     * This test checks that all properties of the Record object are assigned correctly
+     * This test checks that all properties of the DetailedRecord object are assigned correctly
      * when a new instance is created.
      *
      * @example
      * ```ts
-     * const record = new Record('2024-01-01', 1, 2024, 'Company A', 'Pipeline X', 'Key Point Y', 48.123, -97.456, 'south', 'export', 'oil', 100, 50, 50, 120, 100, 'No variance');
+     * const record = new DetailedRecord('2024-01-01', 1, 2024, 'Company A', 'Pipeline X', 'Key Point Y', 48.123, -97.456, 'south', 'export', 'oil', 100, 50, 50, 120, 100, 'No variance');
      * expect(record.Company).toBe('Company A');
      * expect(record.Latitude).toBe(48.123);
      * ```
      */
-    it('should correctly initialize the Record object with valid data', () => {
-        const record = new Record(
+    it('should correctly initialize the DetailedRecord object with valid data', () => {
+        const record = new DetailedRecord(
             '2024-01-01',
             1,
             2024,
@@ -66,19 +66,19 @@ describe('Record', () => {
     });
 
     /**
-     * Test to ensure the Record object handles empty or null values.
+     * Test to ensure the DetailedRecord object handles empty or null values.
      *
-     * This test checks that the Record class can handle missing or undefined data
+     * This test checks that the DetailedRecord class can handle missing or undefined data
      * by allowing empty strings or null values during instantiation.
      *
      * @example
      * ```ts
-     * const record = new Record('', 0, 0, '', '', '', 0, 0, '', '', '', 0, 0, 0, 0, 0, '');
+     * const record = new DetailedRecord('', 0, 0, '', '', '', 0, 0, '', '', '', 0, 0, 0, 0, 0, '');
      * expect(record.Date).toBe('');
      * ```
      */
     it('should handle empty or null values gracefully', () => {
-        const record = new Record('', 0, 0, '', '', '', 0, 0, '', '', '', 0, 0, 0, 0, 0, '');
+        const record = new DetailedRecord('', 0, 0, '', '', '', 0, 0, '', '', '', 0, 0, 0, 0, 0, '');
 
         // Check that all fields can be empty or zero without errors
         expect(record.Date).toBe('');

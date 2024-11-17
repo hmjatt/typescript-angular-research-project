@@ -1,5 +1,5 @@
 import { displayRecord } from '../src/utils/displayUtils';
-import { Record } from '../src/models/Record';
+import { DetailedRecord } from '../src/models/DetailedRecord';
 import pc from 'picocolors';
 
 /**
@@ -42,16 +42,16 @@ describe('displayRecord', () => {
      * Test to ensure the record's details are printed with the correct color formatting using picocolors.
      *
      * This test checks that the displayRecord function uses picocolors to color-code each
-     * field of the Record object. It verifies that console.log is called with correctly
+     * field of the DetailedRecord object. It verifies that console.log is called with correctly
      * formatted text and colors for each field.
      *
      * @example
-     * The test creates a valid Record object and calls the displayRecord function.
+     * The test creates a valid DetailedRecord object and calls the displayRecord function.
      * The result should display each field with the correct color-coded output.
      */
     it('should display the record details with correct formatting', () => {
-        // Create a sample Record object with valid data
-        const record = new Record(
+        // Create a sample DetailedRecord object with valid data
+        const record = new DetailedRecord(
             '2024-01-01', // Date
             1, // Month
             2024, // Year
@@ -117,8 +117,8 @@ describe('displayRecord', () => {
      * undefined, or empty values with "N/A" for better clarity in the output.
      */
     it('should display "N/A" for missing or null values, and keep 0 as a valid value', () => {
-        // Create a sample Record object with missing/null values
-        const record = new Record(
+        // Create a sample DetailedRecord object with missing/null values
+        const record = new DetailedRecord(
             '', // Date
             0, // Month (valid value)
             0, // Year (valid value)
