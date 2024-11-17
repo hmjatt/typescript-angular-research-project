@@ -1,6 +1,6 @@
 // datasetService.test.ts
 import { loadDataset } from '../src/services/datasetService';
-import { Record } from '../src/models/Record';
+import { DetailedRecord } from '../src/models/DetailedRecord';
 
 /**
  * Unit tests for DatasetService.
@@ -15,7 +15,7 @@ describe('DatasetService', () => {
      * Test to ensure loadDataset loads records correctly from a valid CSV file.
      */
     it('should load and parse records correctly from CSV', async () => {
-        const records: Record[] = await loadDataset('./src/keystone-throughput-and-capacity.csv');
+        const records: DetailedRecord[] = await loadDataset('./src/keystone-throughput-and-capacity.csv');
         const expectedRecordCount = 354;
 
         // Check that the expected number of records are loaded
@@ -23,7 +23,7 @@ describe('DatasetService', () => {
 
         // Check that each record is correctly populated
         records.forEach((record) => {
-            expect(record).toBeInstanceOf(Record);
+            expect(record).toBeInstanceOf(DetailedRecord);
             expect(record.Date).toMatch(/\d{4}-\d{2}-\d{2}/); // Date format YYYY-MM-DD
             expect(typeof record.Month).toBe('number');
             expect(typeof record.Year).toBe('number');
