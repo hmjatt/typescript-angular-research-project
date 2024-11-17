@@ -4,7 +4,7 @@ import { loadDataset } from '../src/services/datasetService';
 import readline from 'readline';
 import fs from 'fs';
 import pc from 'picocolors';
-import { Record } from '../src/models/Record';
+import { DetailedRecord } from '../src/models/DetailedRecord';
 
 // Mock dependencies
 jest.mock('readline');
@@ -46,7 +46,7 @@ describe('MainService', () => {
      */
     it('should create a new record and add it to the dataset', async () => {
         // Initialize an empty records array
-        const records: Record[] = [];
+        const records: DetailedRecord[] = [];
         (loadDataset as jest.Mock).mockResolvedValue(records);
 
         // Simulate user input
@@ -90,7 +90,7 @@ describe('MainService', () => {
     it('should update an existing record with new values', async () => {
         // Initialize records with one record
         const initialRecords = [
-            new Record(
+            new DetailedRecord(
                 '2024-01-01',
                 1,
                 2024,
