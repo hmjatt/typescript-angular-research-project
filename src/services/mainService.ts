@@ -85,7 +85,8 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
         4. Delete a record
         5. Reload dataset
         6. Save dataset to file
-        7. Exit
+        7. Generate ASCII Chart for a Record
+        8. Exit
         `);
 
             // Display author's name at the end of the menu
@@ -123,7 +124,10 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 case '6':  // Save the dataset to a file
                     saveDataset();
                     break;
-                case '7':  // Exit the program
+                case '7': // Generate ASCII chart
+                    selectRecordForChart(records, rl, showMenu);
+                    break;
+                case '8':  // Exit the program
                     rl.close();
                     break;
                 default:
@@ -150,23 +154,23 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                     showMenu();
                     return;
                 }
-        
+
                 parse(input, { delimiter: ',', quote: '"', relax_quotes: true }, (err, output) => {
                     if (err) {
                         console.error(pc.red('Error parsing input. Please try again.'));
                         showMenu();
                         return;
                     }
-        
+
                     const data = output[0]; // Parsed array of values
-        
+
                     // Check if data array has exactly 17 fields
                     if (data.length !== 17) {
                         console.error(pc.red(`Insufficient data provided. Please enter exactly 17 fields. You entered ${data.length}.`));
                         showMenu();
                         return;
                     }
-        
+
                     // Proceed to create the DetailedRecord object
                     try {
                         const newRecord = new DetailedRecord(
@@ -188,7 +192,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                             parseFloat(data[15]),   // AvailableCapacity (number)
                             data[16]               // ReasonForVariance
                         );
-        
+
                         records.push(newRecord);
                         console.log(pc.green("Record added successfully!"));
                     } catch (e) {
@@ -198,7 +202,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 });
             });
         };
-        
+
         /**
          * Prompts the user for a record number and updated details, then updates the specified record.
          * 
@@ -355,6 +359,54 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 console.error(pc.red(`Error saving dataset: ${(error instanceof Error) ? error.message : 'Unknown error'}`));
             }
             showMenu();
+        };
+
+        /**
+         * Allow the user to select a record and generate an ASCII chart.
+         * @param {DetailedRecord[]} records - The dataset records.
+         * @param {readline.Interface} rl - Readline interface for input.
+         * @param {Function} callback - Callback function to return to the menu.
+         */
+        const selectRecordForChart = (
+            records: DetailedRecord[],
+            rl: readline.Interface,
+            callback: () => void
+        ): void => {
+            console.log(pc.blue('\nSelect a record to generate an ASCII chart:'));
+            records.forEach((record, index) => {
+                console.log(
+                    pc.yellow(
+                        `${index + 1}. Company: ${record.Company}, Year: ${record.Year}, Throughput: ${record.Throughput}`
+                    )
+                );
+            });
+
+            rl.question(pc.green('\nEnter the record number: '), (input) => {
+                const index = parseInt(input, 10) - 1;
+                if (isNaN(index) || index < 0 || index >= records.length) {
+                    console.log(pc.red('Invalid record number. Returning to menu.'));
+                    callback();
+                    return;
+                }
+
+                // Generate ASCII chart for the selected record
+                generateASCIIChart(records[index]);
+                callback();
+            });
+        };
+
+        /**
+         * Generate an ASCII chart for a given record.
+         * @param {DetailedRecord} record - The selected record.
+         */
+        const generateASCIIChart = (record: DetailedRecord): void => {
+            console.log(pc.green('\nGenerating ASCII Chart...'));
+            console.log(pc.blue(`Company: ${record.Company}`));
+            console.log(pc.blue('Throughput:'));
+
+            const barLength = Math.round(record.Throughput / 10); // Scale the bar length
+            console.log(pc.green('[' + '='.repeat(barLength) + ']'));
+            console.log(pc.yellow(`Value: ${record.Throughput}`));
         };
 
         // Override rl.close to resolve the promise when the program exits
