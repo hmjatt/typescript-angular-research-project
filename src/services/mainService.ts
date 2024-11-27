@@ -372,20 +372,12 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             rl: readline.Interface,
             callback: () => void
         ): void => {
-            console.log(pc.blue('\nSelect a record to generate an ASCII chart:'));
-            records.forEach((record, index) => {
-                console.log(
-                    pc.yellow(
-                        `${index + 1}. Company: ${record.Company}, Year: ${record.Year}, Throughput: ${record.Throughput}`
-                    )
-                );
-            });
-
-            rl.question(pc.green('\nEnter the record number: '), (input) => {
+            console.log(pc.blue(`The dataset contains ${records.length} records.`));
+            rl.question(pc.green('Enter the record number (1 to ' + records.length + '): '), (input) => {
                 const index = parseInt(input, 10) - 1;
                 if (isNaN(index) || index < 0 || index >= records.length) {
-                    console.log(pc.red('Invalid record number. Returning to menu.'));
-                    callback();
+                    console.log(pc.red('Invalid record number. Please try again.'));
+                    selectRecordForChart(records, rl, callback); // Retry selection
                     return;
                 }
 
@@ -402,11 +394,15 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
         const generateASCIIChart = (record: DetailedRecord): void => {
             console.log(pc.green('\nGenerating ASCII Chart...'));
             console.log(pc.blue(`Company: ${record.Company}`));
+            console.log(pc.blue(`Year: ${record.Year}`));
             console.log(pc.blue('Throughput:'));
 
-            const barLength = Math.round(record.Throughput / 10); // Scale the bar length
-            console.log(pc.green('[' + '='.repeat(barLength) + ']'));
-            console.log(pc.yellow(`Value: ${record.Throughput}`));
+            // Scale bar length for terminal (e.g., max length 50)
+            const maxBarLength = 50;
+            const scaledLength = Math.min(Math.round(record.Throughput), maxBarLength);
+
+            console.log(pc.green('[' + '='.repeat(scaledLength) + ']'));
+            console.log(pc.yellow(`Value: ${record.Throughput.toFixed(2)}`));
         };
 
         // Override rl.close to resolve the promise when the program exits
