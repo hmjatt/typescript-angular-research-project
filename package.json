@@ -7,7 +7,9 @@
     "test": "jest",
     "start": "ts-node src/app.ts",
     "build": "tsc",
-    "docs": "typedoc && open docs/index.html"
+    "docs": "typedoc && open docs/index.html",
+    "serve": "node server.js",
+    "start-all": "concurrently \"ts-node src/app.ts\" \"node server.js\""
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,7 @@
   "dependencies": {
     "@angular/cli": "^18.2.4",
     "@types/node": "^22.5.5",
+    "concurrently": "^8.2.2",
     "csv-parse": "^5.5.6",
     "express": "^4.21.1",
     "picocolors": "^1.1.0",
