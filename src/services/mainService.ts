@@ -146,6 +146,8 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             showMenu(); // Return to the main menu after processing
         };
 
+        
+
         /**
          * Prompts the user for new record details, creates a new `DetailedRecord` object, and adds it to the in-memory dataset.
          * 
@@ -370,14 +372,6 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             showMenu();
         };
 
-        const getInput = (prompt: string): Promise<string> => {
-            return new Promise((resolve, reject) => {
-                rl.question(pc.yellow(prompt), (input) => {
-                    resolve(input.trim());
-                });
-            });
-        };
-
         const monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -389,41 +383,56 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             groupByMonth = false
         ): void => {
             term.clear();
-            term.bold.underline(`${title} (Throughput in 1000 m³/d)\n\n`);
+            term.bold.underline(`${title} (1000 m³/d)\n\n`);
         
             const labels = groupByMonth
                 ? [...new Set(data.map(record => `${monthNames[record.Month - 1]}`))]
                 : data.map((_, index) => `Record ${index + 1}`);
-            const values = groupByMonth
+            const throughputValues = groupByMonth
                 ? Array.from({ length: 12 }, (_, month) =>
                     data
                         .filter(record => record.Month === month + 1)
                         .reduce((sum, record) => sum + (record.Throughput || 0), 0)
                 )
                 : data.map(record => record.Throughput || 0);
+            const capacityValues = groupByMonth
+                ? Array.from({ length: 12 }, (_, month) =>
+                    data
+                        .filter(record => record.Month === month + 1)
+                        .reduce((sum, record) => sum + (record.AvailableCapacity || 0), 0)
+                )
+                : data.map(record => record.AvailableCapacity || 0);
         
-            displayHorizontalBarChartFromData(labels, values, title);
+            displayHorizontalBarChartFromData(labels, throughputValues, capacityValues, title);
         };
-
+        
         const displayHorizontalBarChartFromData = (
             labels: string[],
-            values: number[],
+            throughputValues: number[],
+            capacityValues: number[],
             title: string
         ): void => {
-            const maxValue = Math.max(...values, 1);
-            const maxBarLength = Math.min(term.width - 30, 50);
+            const maxValue = Math.max(...throughputValues, ...capacityValues, 1);
+            const maxBarLength = Math.min(term.width - 40, 50);
         
             labels.forEach((label, index) => {
-                const barLength = Math.round((values[index] / maxValue) * maxBarLength);
+                const throughputBarLength = Math.round((throughputValues[index] / maxValue) * maxBarLength);
+                const capacityBarLength = Math.round((capacityValues[index] / maxValue) * maxBarLength);
+        
                 term(`${label.padEnd(20)}: `);
-                term.bgGreen(' '.repeat(barLength)).styleReset();
-                term(` ${values[index].toFixed(2)}\n`);
+                term.bgBlue(' '.repeat(throughputBarLength)).styleReset();
+                term(` Throughput: ${throughputValues[index].toFixed(2)}`);
+        
+                term('\n'.padEnd(22, ' '));
+                term.bgYellow(' '.repeat(capacityBarLength)).styleReset();
+                term(` Capacity: ${capacityValues[index].toFixed(2)}\n`);
             });
         
             term.bold.underline("\nLegend:").styleReset();
-            term(" Throughput values are in 1000 m³/d.\n\n");
+            term("\n Blue = Throughput (1000 m³/d)");
+            term("\n Yellow = Available Capacity (1000 m³/d)\n\n");
         };
-
+        
         const interactiveChartMenu = async (): Promise<void> => {
             console.log(`
             --- Charting Menu ---
@@ -465,13 +474,15 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                     const aggregatedData = years.map(year => {
                         const yearlyRecords = records.filter(record => record.Year === year);
                         const totalThroughput = yearlyRecords.reduce((sum, record) => sum + (record.Throughput || 0), 0);
-                        return { year, totalThroughput };
+                        const totalCapacity = yearlyRecords.reduce((sum, record) => sum + (record.AvailableCapacity || 0), 0);
+                        return { year, totalThroughput, totalCapacity };
                     });
         
                     const labels = aggregatedData.map(data => `${data.year}`);
-                    const values = aggregatedData.map(data => data.totalThroughput);
+                    const throughputValues = aggregatedData.map(data => data.totalThroughput);
+                    const capacityValues = aggregatedData.map(data => data.totalCapacity);
         
-                    displayHorizontalBarChartFromData(labels, values, "Combined Throughput by Year");
+                    displayHorizontalBarChartFromData(labels, throughputValues, capacityValues, "Combined Data by Year");
                     break;
         
                 case '4': // Return to main menu
@@ -491,12 +502,21 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             await new Promise<void>(resolve => {
                 term.on('key', () => {
                     term.grabInput(false);
-                    interactiveChartMenu();
+                    console.clear();
+                    console.log("Returning to the chart menu...");
                     resolve();
                 });
             });
         };
-
+        
+        
+        const getInput = (prompt: string): Promise<string> => {
+            return new Promise((resolve, reject) => {
+                rl.question(pc.yellow(prompt), (input) => {
+                    resolve(input.trim());
+                });
+            });
+        };        
     
         // Override rl.close to resolve the promise when the program exits
         const originalRlClose = rl.close.bind(rl);
