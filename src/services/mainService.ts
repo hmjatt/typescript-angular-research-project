@@ -6,6 +6,8 @@ import readline from 'readline'; // Used for interactive terminal input
 import fs from 'fs';  // File system to save new CSV files
 import pc from 'picocolors';  // External library for colorized output in the terminal
 import { parse } from 'csv-parse';
+import blessed from 'blessed';
+import contrib from 'blessed-contrib';
 
 /**
  * Handles the main program logic of loading the dataset and interacting with the user.
@@ -124,8 +126,26 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 case '6':  // Save the dataset to a file
                     saveDataset();
                     break;
-                case '7': // Generate ASCII chart
-                    selectRecordForChart(records, rl, showMenu);
+                case '7': // Generate ASCII Chart for a Record
+                    if (records.length === 0) {
+                        console.log(pc.red('No records available to generate a chart.'));
+                        showMenu();
+                        break;
+                    }
+
+                    console.log(pc.green(`\nThere are ${records.length} records available.`));
+                    rl.question(pc.yellow('Enter record number: '), (input) => {
+                        const index = parseInt(input, 10) - 1;
+                        if (isNaN(index) || index < 0 || index >= records.length) {
+                            console.log(pc.red('Invalid record number!'));
+                            showMenu();
+                            return;
+                        }
+
+                        const selectedRecord = records[index];
+                        generateInteractiveChart(selectedRecord); // Call the new chart function
+                        showMenu();
+                    });
                     break;
                 case '8':  // Exit the program
                     rl.close();
@@ -362,47 +382,47 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
         };
 
         /**
-         * Allow the user to select a record and generate an ASCII chart.
-         * @param {DetailedRecord[]} records - The dataset records.
-         * @param {readline.Interface} rl - Readline interface for input.
-         * @param {Function} callback - Callback function to return to the menu.
-         */
-        const selectRecordForChart = (
-            records: DetailedRecord[],
-            rl: readline.Interface,
-            callback: () => void
-        ): void => {
-            console.log(pc.blue(`The dataset contains ${records.length} records.`));
-            rl.question(pc.green('Enter the record number (1 to ' + records.length + '): '), (input) => {
-                const index = parseInt(input, 10) - 1;
-                if (isNaN(index) || index < 0 || index >= records.length) {
-                    console.log(pc.red('Invalid record number. Please try again.'));
-                    selectRecordForChart(records, rl, callback); // Retry selection
-                    return;
-                }
-
-                // Generate ASCII chart for the selected record
-                generateASCIIChart(records[index]);
-                callback();
-            });
-        };
-
-        /**
-         * Generate an ASCII chart for a given record.
+         * Generate an interactive bar chart for a record using `blessed` and `blessed-contrib`.
          * @param {DetailedRecord} record - The selected record.
          */
-        const generateASCIIChart = (record: DetailedRecord): void => {
-            console.log(pc.green('\nGenerating ASCII Chart...'));
-            console.log(pc.blue(`Company: ${record.Company}`));
-            console.log(pc.blue(`Year: ${record.Year}`));
-            console.log(pc.blue('Throughput:'));
+        const generateInteractiveChart = (record: DetailedRecord): void => {
+            // Create a screen object
+            const screen = blessed.screen({
+                smartCSR: true,
+                title: 'Record Chart',
+            });
 
-            // Scale bar length for terminal (e.g., max length 50)
-            const maxBarLength = 50;
-            const scaledLength = Math.min(Math.round(record.Throughput), maxBarLength);
+            // Add a box for displaying the chart
+            const grid = new contrib.grid({ rows: 12, cols: 12, screen: screen });
 
-            console.log(pc.green('[' + '='.repeat(scaledLength) + ']'));
-            console.log(pc.yellow(`Value: ${record.Throughput.toFixed(2)}`));
+            // Bar chart configuration
+            const bar = grid.set(0, 0, 12, 12, contrib.bar, {
+                label: `Chart for ${record.Company} (${record.Year})`,
+                barWidth: 10,
+                barSpacing: 5,
+                xOffset: 2,
+                maxHeight: 100,
+                barBgColor: 'blue',
+            });
+
+            // Chart data
+            const labels = ['Throughput', 'Committed', 'Uncommitted', 'Available'];
+            const data = [
+                record.Throughput || 0,
+                record.CommittedVolumes || 0,
+                record.UncommittedVolumes || 0,
+                record.AvailableCapacity || 0,
+            ];
+
+            bar.setData({ titles: labels, data: data });
+
+            // Quit on Escape, Q, or Ctrl+C
+            screen.key(['escape', 'q', 'C-c'], () => {
+                screen.destroy();
+            });
+
+            // Render the screen
+            screen.render();
         };
 
         // Override rl.close to resolve the promise when the program exits
