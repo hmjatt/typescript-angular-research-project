@@ -415,6 +415,9 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 term(` ${values[index].toFixed(2)}\n`);
             });
 
+            // Display author's name at the end of the menu
+            console.log(pc.bold(pc.bgCyanBright("\nHarmeet Matharoo - CST8333 Project")));
+
             term('\nPress any key to return to the menu...\n');
 
             // Capture a key press and exit the chart view
