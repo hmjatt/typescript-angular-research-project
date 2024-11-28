@@ -34,6 +34,7 @@ const term = termkit.terminal; // Use the terminal object
  * @see {@link https://github.com/alexeyraspopov/picocolors Picocolors Documentation} for terminal string styling.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/console/log console.log()} for printing output in the terminal.
  * @see {@link https://nodejs.org/api/readline.html Node.js readline API} for interactive user input.
+ * @see {@link https://www.npmjs.com/package/terminal-kit terminal-kit Documentation} for terminal-based charting and UI interactions.
  * 
  * @param {string} filePath - The path to the CSV file to load.
  * @returns {Promise<DetailedRecord[]>} A promise that resolves with the updated records when the program exits.
@@ -372,58 +373,88 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             showMenu();
         };
 
+        /**
+         * Array containing the names of the months.
+         * Used for display purposes when rendering charts and labels.
+         */
         const monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
 
-
+        /**
+         * Displays yearly data for a given year in a bar chart format.
+         * Aggregates data by month and visualizes throughput and available capacity
+         * using `terminal-kit` for terminal-based graphical representation.
+         * 
+         * @param {number} year - The year for which to display data.
+         * @param {DetailedRecord[]} records - The dataset containing throughput and capacity records.
+         * 
+         * @remarks
+         * - Uses `monthNames` for month labels.
+         * - Filters the dataset for the specified year and calculates aggregated values for each month.
+         * - Ensures bars are scaled relative to the maximum values in the dataset.
+         * 
+         * @see {@link https://github.com/cronvel/terminal-kit terminal-kit Documentation}
+         */
         const displayYearlyData = (year: number, records: DetailedRecord[]) => {
             const yearData = records.filter(record => record.Year === year);
-        
+
             // Ensure records exist for the year
             if (yearData.length === 0) {
                 console.error(pc.red(`No data found for the year ${year}.`));
                 return;
             }
-        
+
             // Aggregate data for each month
             const aggregatedMonthlyData = Array.from({ length: 12 }, (_, monthIndex) => {
                 const monthlyRecords = yearData.filter(record => record.Month === monthIndex + 1);
-        
+
                 return {
                     month: monthNames[monthIndex],
                     totalThroughput: monthlyRecords.reduce((sum, record) => sum + (record.Throughput || 0), 0),
                     totalCapacity: monthlyRecords.reduce((sum, record) => sum + (record.AvailableCapacity || 0), 0),
                 };
             });
-        
+
             // Calculate maximum value for scaling bars
             const maxThroughput = Math.max(...aggregatedMonthlyData.map(data => data.totalThroughput), 1);
             const maxCapacity = Math.max(...aggregatedMonthlyData.map(data => data.totalCapacity), 1);
             const maxBarLength = Math.min(term.width - 20, 70); // Adjust bar length based on terminal width
-        
+
             // Display the aggregated data
             aggregatedMonthlyData.forEach(({ month, totalThroughput, totalCapacity }) => {
                 const throughputBarLength = Math.round((totalThroughput / maxThroughput) * maxBarLength);
                 const capacityBarLength = Math.round((totalCapacity / maxCapacity) * maxBarLength);
-        
+
                 term(`${month.padEnd(12)}: `); // Month label
                 term.bgBlue(' '.repeat(throughputBarLength)).styleReset(); // Throughput bar
                 term(` Throughput: ${totalThroughput.toFixed(2)}\n`);
-        
+
                 term(' '.repeat(14)); // Align capacity bar
                 term.bgYellow(' '.repeat(capacityBarLength)).styleReset(); // Capacity bar
                 term(` Capacity: ${totalCapacity.toFixed(2)}\n`);
                 term(pc.gray("--------------------\n"));
             });
-        
+
             term.bold.underline("\nLegend:").styleReset();
             term("\n Blue = Throughput (1000 m³/d)");
             term("\n Yellow = Available Capacity (1000 m³/d)\n\n");
         };
-        
 
+        /**
+         * Displays a horizontal bar chart for the provided data.
+         * Groups data either by individual records or by months depending on the `groupByMonth` flag.
+         * 
+         * @param {DetailedRecord[]} data - The dataset to visualize.
+         * @param {string} title - The title of the chart.
+         * @param {boolean} [groupByMonth=false] - Whether to group data by month or individual records.
+         * 
+         * @remarks
+         * - Uses `terminal-kit` for rendering bars in the terminal.
+         * - When `groupByMonth` is true, aggregates throughput and capacity data for each month.
+         * - Delegates rendering to `displayHorizontalBarChartFromData`.
+         */
         const displayHorizontalBarChart = (
             data: DetailedRecord[],
             title: string,
@@ -453,6 +484,21 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             displayHorizontalBarChartFromData(labels, throughputValues, capacityValues, title);
         };
 
+        /**
+         * Renders a horizontal bar chart using the given labels and data values.
+         * 
+         * @param {string[]} labels - The labels for each bar in the chart.
+         * @param {number[]} throughputValues - Array of throughput values to visualize.
+         * @param {number[]} capacityValues - Array of available capacity values to visualize.
+         * @param {string} title - The title of the chart.
+         * 
+         * @remarks
+         * - Bars are scaled relative to the maximum value in the dataset.
+         * - Throughput bars are rendered in blue, and capacity bars in yellow.
+         * - Uses `terminal-kit` for rendering bars and terminal output.
+         * 
+         * @see {@link https://github.com/cronvel/terminal-kit terminal-kit Documentation}
+         */
         const displayHorizontalBarChartFromData = (
             labels: string[],
             throughputValues: number[],
@@ -485,7 +531,17 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             term("\n Yellow = Available Capacity (1000 m³/d)\n\n");
         };
 
-
+        /**
+         * Provides an interactive charting menu for users to select and view different charts.
+         * 
+         * @remarks
+         * - Allows users to choose charts for specific months, years, or combined yearly data.
+         * - Relies on `terminal-kit` for rendering charts in the terminal.
+         * 
+         * @returns {Promise<void>} Resolves when the user exits the charting menu.
+         * 
+         * @see {@link https://github.com/cronvel/terminal-kit terminal-kit Documentation}
+         */
         const interactiveChartMenu = async (): Promise<void> => {
             while (true) {
 
@@ -555,6 +611,12 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             }
         };
 
+        /**
+         * Prompts the user for input and resolves the entered value.
+         * 
+         * @param {string} prompt - The message to display to the user.
+         * @returns {Promise<string>} The user's input as a string.
+         */
         const getInput = (prompt: string): Promise<string> => {
             return new Promise((resolve, reject) => {
                 rl.question(pc.yellow(prompt), (input) => {
