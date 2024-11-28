@@ -377,6 +377,53 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
 
+
+        const displayYearlyData = (year: number, records: DetailedRecord[]) => {
+            const yearData = records.filter(record => record.Year === year);
+        
+            // Ensure records exist for the year
+            if (yearData.length === 0) {
+                console.error(pc.red(`No data found for the year ${year}.`));
+                return;
+            }
+        
+            // Aggregate data for each month
+            const aggregatedMonthlyData = Array.from({ length: 12 }, (_, monthIndex) => {
+                const monthlyRecords = yearData.filter(record => record.Month === monthIndex + 1);
+        
+                return {
+                    month: monthNames[monthIndex],
+                    totalThroughput: monthlyRecords.reduce((sum, record) => sum + (record.Throughput || 0), 0),
+                    totalCapacity: monthlyRecords.reduce((sum, record) => sum + (record.AvailableCapacity || 0), 0),
+                };
+            });
+        
+            // Calculate maximum value for scaling bars
+            const maxThroughput = Math.max(...aggregatedMonthlyData.map(data => data.totalThroughput), 1);
+            const maxCapacity = Math.max(...aggregatedMonthlyData.map(data => data.totalCapacity), 1);
+            const maxBarLength = Math.min(term.width - 20, 70); // Adjust bar length based on terminal width
+        
+            // Display the aggregated data
+            aggregatedMonthlyData.forEach(({ month, totalThroughput, totalCapacity }) => {
+                const throughputBarLength = Math.round((totalThroughput / maxThroughput) * maxBarLength);
+                const capacityBarLength = Math.round((totalCapacity / maxCapacity) * maxBarLength);
+        
+                term(`${month.padEnd(12)}: `); // Month label
+                term.bgBlue(' '.repeat(throughputBarLength)).styleReset(); // Throughput bar
+                term(` Throughput: ${totalThroughput.toFixed(2)}\n`);
+        
+                term(' '.repeat(14)); // Align capacity bar
+                term.bgYellow(' '.repeat(capacityBarLength)).styleReset(); // Capacity bar
+                term(` Capacity: ${totalCapacity.toFixed(2)}\n`);
+                term(pc.gray("--------------------\n"));
+            });
+        
+            term.bold.underline("\nLegend:").styleReset();
+            term("\n Blue = Throughput (1000 m³/d)");
+            term("\n Yellow = Available Capacity (1000 m³/d)\n\n");
+        };
+        
+
         const displayHorizontalBarChart = (
             data: DetailedRecord[],
             title: string,
@@ -451,8 +498,8 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             `);
 
 
-            // Display author's name at the end of the menu
-            console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));
+                // Display author's name at the end of the menu
+                console.log(pc.bold(pc.bgCyanBright("Harmeet Matharoo - CST8333 Project")));
 
                 const chartChoice = await getInput("\nChoose a charting option: ");
                 switch (chartChoice.trim()) {
@@ -472,14 +519,14 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                     case '2': // Chart for all months in a year
                         const selectedYear = parseInt(await getInput("\nEnter the year: "), 10);
 
-                        const yearData = records.filter(record => record.Year === selectedYear);
-
-                        if (yearData.length === 0) {
-                            console.error(pc.red("No data found for the selected year."));
-                        } else {
-                            displayHorizontalBarChart(yearData, `All months in ${selectedYear}`, true);
+                        if (isNaN(selectedYear)) {
+                            console.error(pc.red("Invalid year entered."));
+                            break;
                         }
+
+                        displayYearlyData(selectedYear, records);
                         break;
+
 
                     case '3': // Compare combined monthly data across years
                         const years = Array.from(new Set(records.map(record => record.Year)));
@@ -503,7 +550,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
 
                     default:
                         console.error(pc.red("Invalid charting option!"));
-                        // break;
+                    // break;
                 }
             }
         };
