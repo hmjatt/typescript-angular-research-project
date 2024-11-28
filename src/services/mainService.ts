@@ -146,111 +146,6 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             showMenu(); // Return to the main menu after processing
         };
 
-        // /**
-        //  * Handles the user's menu selection and performs the corresponding action.
-        //  * @param {string} choice - The user's menu choice.
-        //  * @returns {void}
-        //  */
-        // const handleMenuInput = (choice: string): void => {
-        //     switch (choice) {
-        //         case '1':  // Display all records
-        //             records.forEach((record, index) => {
-        //                 console.log(pc.yellow(`\nRecord ${index + 1}:`));
-        //                 displayRecord(record);
-        //             });
-        //             showMenu();
-        //             break;
-        //         case '2':  // Create a new record
-        //             createRecord();
-        //             break;
-        //         case '3':  // Update an existing record
-        //             updateRecord();
-        //             break;
-        //         case '4':  // Delete a record
-        //             deleteRecord();
-        //             break;
-        //         case '5':  // Reload the dataset
-        //             reloadDataset();
-        //             break;
-        //         case '6':  // Save the dataset to a file
-        //             saveDataset();
-        //             break;
-        //         case '7': // Interactive Charting Options
-        //             const interactiveChartMenu = async (): Promise<void> => {
-        //                 console.log(`
-        //                 --- Charting Menu ---
-        //                 1. Select a specific month in a year
-        //                 2. Show all months in a year
-        //                 3. Compare combined monthly data across years
-        //                 4. Return to main menu
-        //                 `);
-
-        //                 rl.question("\nChoose a charting option: ", async (chartChoice) => {
-        //                     switch (chartChoice.trim()) {
-        //                         case '1': // Chart for a specific month in a year
-        //                             const year = parseInt(await getInput("Enter the year: "), 10);
-        //                             const month = parseInt(await getInput("Enter the month (1-12): "), 10);
-
-        //                             const filtered = records.filter(record => record.Year === year && record.Month === month);
-
-        //                             if (filtered.length === 0) {
-        //                                 console.error(pc.red("No data found for the selected month and year."));
-        //                             } else {
-        //                                 displayHorizontalBarChart(filtered, `Data for ${month}-${year}`);
-        //                             }
-        //                             break;
-
-        //                         case '2': // Chart for all months in a year
-        //                             const selectedYear = parseInt(await getInput("Enter the year: "), 10);
-
-        //                             const yearData = records.filter(record => record.Year === selectedYear);
-
-        //                             if (yearData.length === 0) {
-        //                                 console.error(pc.red("No data found for the selected year."));
-        //                             } else {
-        //                                 displayHorizontalBarChart(yearData, `All months in ${selectedYear}`, true);
-        //                             }
-        //                             break;
-
-        //                         case '3': // Compare combined monthly data across years
-        //                             const years = Array.from(new Set(records.map(record => record.Year)));
-        //                             const aggregatedData = years.map(year => {
-        //                                 const yearlyRecords = records.filter(record => record.Year === year);
-        //                                 const totalThroughput = yearlyRecords.reduce((sum, record) => sum + (record.Throughput || 0), 0);
-        //                                 return { year, totalThroughput };
-        //                             });
-
-        //                             const labels = aggregatedData.map(data => `${data.year}`);
-        //                             const values = aggregatedData.map(data => data.totalThroughput);
-
-        //                             displayHorizontalBarChartFromData(labels, values, "Combined Throughput by Year");
-        //                             break;
-
-        //                         case '4': // Return to main menu
-        //                             showMenu();
-        //                             return;
-
-        //                         default:
-        //                             console.error(pc.red("Invalid charting option!"));
-        //                             break;
-        //                     }
-        //                     await returnToChartMenu();
-        //                 });
-        //             };
-
-        //             interactiveChartMenu();
-        //             break;
-
-        //         case '8':  // Exit the program
-        //             rl.close();
-        //             break;
-        //         default:
-        //             console.log(pc.red('Invalid choice!'));
-        //             showMenu();
-        //             break;
-        //     }
-        // };
-
         /**
          * Prompts the user for new record details, creates a new `DetailedRecord` object, and adds it to the in-memory dataset.
          * 
@@ -475,68 +370,6 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             showMenu();
         };
 
-        const interactiveChartMenu = async (): Promise<void> => {
-            console.log(`
-            --- Charting Menu ---
-            1. Select a specific month in a year
-            2. Show all months in a year
-            3. Compare combined monthly data across years
-            4. Return to main menu
-            `);
-    
-            rl.question("\nChoose a charting option: ", async (chartChoice) => {
-                switch (chartChoice.trim()) {
-                    case '1': // Chart for a specific month in a year
-                        const year = parseInt(await getInput("Enter the year: "), 10);
-                        const month = parseInt(await getInput("Enter the month (1-12): "), 10);
-    
-                        const filtered = records.filter(record => record.Year === year && record.Month === month);
-    
-                        if (filtered.length === 0) {
-                            console.error(pc.red("No data found for the selected month and year."));
-                        } else {
-                            displayHorizontalBarChart(filtered, `Data for ${month}-${year}`);
-                        }
-                        break;
-    
-                    case '2': // Chart for all months in a year
-                        const selectedYear = parseInt(await getInput("Enter the year: "), 10);
-    
-                        const yearData = records.filter(record => record.Year === selectedYear);
-    
-                        if (yearData.length === 0) {
-                            console.error(pc.red("No data found for the selected year."));
-                        } else {
-                            displayHorizontalBarChart(yearData, `All months in ${selectedYear}`, true);
-                        }
-                        break;
-    
-                    case '3': // Compare combined monthly data across years
-                        const years = Array.from(new Set(records.map(record => record.Year)));
-                        const aggregatedData = years.map(year => {
-                            const yearlyRecords = records.filter(record => record.Year === year);
-                            const totalThroughput = yearlyRecords.reduce((sum, record) => sum + (record.Throughput || 0), 0);
-                            return { year, totalThroughput };
-                        });
-    
-                        const labels = aggregatedData.map(data => `${data.year}`);
-                        const values = aggregatedData.map(data => data.totalThroughput);
-    
-                        displayHorizontalBarChartFromData(labels, values, "Combined Throughput by Year");
-                        break;
-    
-                    case '4': // Return to main menu
-                        showMenu();
-                        return;
-    
-                    default:
-                        console.error(pc.red("Invalid charting option!"));
-                        break;
-                }
-                await returnToChartMenu();
-            });
-        };
-
         const getInput = (prompt: string): Promise<string> => {
             return new Promise((resolve, reject) => {
                 rl.question(pc.yellow(prompt), (input) => {
@@ -544,6 +377,11 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 });
             });
         };
+
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
         
         const displayHorizontalBarChart = (
             data: DetailedRecord[],
@@ -551,17 +389,17 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             groupByMonth = false
         ): void => {
             term.clear();
-            term.bold.underline(`${title}\n\n`);
+            term.bold.underline(`${title} (Throughput in 1000 m³/d)\n\n`);
         
             const labels = groupByMonth
-                ? [...new Set(data.map(record => `Month ${record.Month}`))]
+                ? [...new Set(data.map(record => `${monthNames[record.Month - 1]}`))]
                 : data.map((_, index) => `Record ${index + 1}`);
             const values = groupByMonth
                 ? Array.from({ length: 12 }, (_, month) =>
-                      data
-                          .filter(record => record.Month === month + 1)
-                          .reduce((sum, record) => sum + (record.Throughput || 0), 0)
-                  )
+                    data
+                        .filter(record => record.Month === month + 1)
+                        .reduce((sum, record) => sum + (record.Throughput || 0), 0)
+                )
                 : data.map(record => record.Throughput || 0);
         
             displayHorizontalBarChartFromData(labels, values, title);
@@ -572,9 +410,6 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             values: number[],
             title: string
         ): void => {
-            term.clear();
-            term.bold.underline(`${title}\n\n`);
-        
             const maxValue = Math.max(...values, 1);
             const maxBarLength = Math.min(term.width - 30, 50);
         
@@ -584,6 +419,70 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 term.bgGreen(' '.repeat(barLength)).styleReset();
                 term(` ${values[index].toFixed(2)}\n`);
             });
+        
+            term.bold.underline("\nLegend:").styleReset();
+            term(" Throughput values are in 1000 m³/d.\n\n");
+        };
+
+        const interactiveChartMenu = async (): Promise<void> => {
+            console.log(`
+            --- Charting Menu ---
+            1. Select a specific month in a year
+            2. Show all months in a year
+            3. Compare combined monthly data across years
+            4. Return to main menu
+            `);
+        
+            const chartChoice = await getInput("Choose a charting option: ");
+            switch (chartChoice.trim()) {
+                case '1': // Chart for a specific month in a year
+                    const year = parseInt(await getInput("Enter the year: "), 10);
+                    const month = parseInt(await getInput("Enter the month (1-12): "), 10);
+        
+                    const filtered = records.filter(record => record.Year === year && record.Month === month);
+        
+                    if (filtered.length === 0) {
+                        console.error(pc.red("No data found for the selected month and year."));
+                    } else {
+                        displayHorizontalBarChart(filtered, `Data for ${monthNames[month - 1]} ${year}`);
+                    }
+                    break;
+        
+                case '2': // Chart for all months in a year
+                    const selectedYear = parseInt(await getInput("Enter the year: "), 10);
+        
+                    const yearData = records.filter(record => record.Year === selectedYear);
+        
+                    if (yearData.length === 0) {
+                        console.error(pc.red("No data found for the selected year."));
+                    } else {
+                        displayHorizontalBarChart(yearData, `All months in ${selectedYear}`, true);
+                    }
+                    break;
+        
+                case '3': // Compare combined monthly data across years
+                    const years = Array.from(new Set(records.map(record => record.Year)));
+                    const aggregatedData = years.map(year => {
+                        const yearlyRecords = records.filter(record => record.Year === year);
+                        const totalThroughput = yearlyRecords.reduce((sum, record) => sum + (record.Throughput || 0), 0);
+                        return { year, totalThroughput };
+                    });
+        
+                    const labels = aggregatedData.map(data => `${data.year}`);
+                    const values = aggregatedData.map(data => data.totalThroughput);
+        
+                    displayHorizontalBarChartFromData(labels, values, "Combined Throughput by Year");
+                    break;
+        
+                case '4': // Return to main menu
+                    showMenu();
+                    return;
+        
+                default:
+                    console.error(pc.red("Invalid charting option!"));
+                    break;
+            }
+            await returnToChartMenu();
         };
         
         const returnToChartMenu = async (): Promise<void> => {
@@ -592,12 +491,13 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             await new Promise<void>(resolve => {
                 term.on('key', () => {
                     term.grabInput(false);
+                    interactiveChartMenu();
                     resolve();
                 });
             });
         };
-        
 
+    
         // Override rl.close to resolve the promise when the program exits
         const originalRlClose = rl.close.bind(rl);
         rl.close = () => {
