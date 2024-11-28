@@ -393,9 +393,9 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
          * @param {DetailedRecord} record - The record to display.
          */
         const generateTerminalChart = async (record: DetailedRecord): Promise<void> => {
-            const term = termkit.terminal; // Reinitialize terminal object for terminal-kit
+            const term = termkit.terminal;
 
-            // Clear the terminal and display the chart
+            // Clear the terminal and display the chart title
             term.clear();
             term.bold.underline(`Horizontal Chart for ${record.Company} (${record.Year})\n\n`);
 
@@ -407,30 +407,34 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 record.AvailableCapacity || 0,
             ];
 
+            // Determine scaling factor for the bars
+            const maxValue = Math.max(...values, 1); // Avoid division by zero
+            const maxBarLength = Math.min(term.width - 30, 50); // Keep bars within terminal width
+
             // Display each metric as a horizontal bar
             labels.forEach((label, index) => {
-                const barLength = Math.round((values[index] / Math.max(...values)) * 20); // Scale bars to fit
-                term(`${label.padEnd(12)}: `);
-                term.green('█'.repeat(barLength));
-                term(` ${values[index].toFixed(2)}\n`);
+                const barLength = Math.round((values[index] / maxValue) * maxBarLength);
+                term(`${label.padEnd(12)}: `); // Left-align the label
+                term.bgGreen(' '.repeat(barLength)).styleReset(); // Green bar
+                term(` ${values[index].toFixed(2)}\n`); // Display the exact value
             });
 
             // Display author's name at the end of the menu
             console.log(pc.bold(pc.bgCyanBright("\nHarmeet Matharoo - CST8333 Project")));
 
+            // Add spacing and instructions
             term('\nPress any key to return to the menu...\n');
 
-            // Capture a key press and exit the chart view
+            // Capture a key press to return to the menu
             term.grabInput();
             return new Promise<void>((resolve) => {
                 term.on('key', () => {
                     term.grabInput(false); // Stop capturing input
-                    term.clear();
-                    resolve(); // Resolve the promise to return to the menu
+                    term.clear(); // Clear the terminal
+                    resolve(); // Return control to the main menu
                 });
             });
         };
-
 
         // Override rl.close to resolve the promise when the program exits
         const originalRlClose = rl.close.bind(rl);
