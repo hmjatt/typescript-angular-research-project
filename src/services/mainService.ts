@@ -108,6 +108,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                         console.log(pc.yellow(`\nRecord ${index + 1}:`));
                         displayRecord(record);
                     });
+                    showMenu();
                     break;
 
                 case '2': // Create a new record
@@ -144,7 +145,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                     break;
             }
 
-            showMenu(); // Return to the main menu after processing
+            // showMenu(); // Return to the main menu after processing
         };
 
 
@@ -601,7 +602,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                         break;
 
                     case '4': // Return to main menu
-                        // showMenu();
+                        showMenu();
                         return;
 
                     default:
