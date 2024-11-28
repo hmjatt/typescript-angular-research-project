@@ -6,9 +6,8 @@ import readline from 'readline'; // Used for interactive terminal input
 import fs from 'fs';  // File system to save new CSV files
 import pc from 'picocolors';  // External library for colorized output in the terminal
 import { parse } from 'csv-parse';
-import blessed from 'blessed';
-import contrib from 'blessed-contrib';
-
+import termkit from 'terminal-kit'; // Ensure correct import of terminal-kit
+const term = termkit.terminal; // Use the terminal object
 /**
  * Handles the main program logic of loading the dataset and interacting with the user.
  * The user can view, create, update, and delete records in memory, and save the dataset back to a CSV file.
@@ -65,7 +64,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
     }
 
     // Create an interface for user input
-    const rl = readline.createInterface({
+    let rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
@@ -134,7 +133,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                     }
 
                     console.log(pc.green(`\nThere are ${records.length} records available.`));
-                    rl.question(pc.yellow('Enter record number: '), (input) => {
+                    rl.question(pc.yellow('Enter record number: '), async (input) => {
                         const index = parseInt(input, 10) - 1;
                         if (isNaN(index) || index < 0 || index >= records.length) {
                             console.log(pc.red('Invalid record number!'));
@@ -143,10 +142,18 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                         }
 
                         const selectedRecord = records[index];
-                        generateInteractiveChart(selectedRecord); // Call the new chart function
-                        showMenu();
+                        await generateTerminalChart(selectedRecord); // Await the chart display
+
+                        // Reinitialize readline interface
+                        rl.close(); // Close the old interface
+                        rl = readline.createInterface({
+                            input: process.stdin,
+                            output: process.stdout,
+                        });
+                        showMenu(); // Return to the menu
                     });
                     break;
+
                 case '8':  // Exit the program
                     rl.close();
                     break;
@@ -382,48 +389,45 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
         };
 
         /**
-         * Generate an interactive bar chart for a record using `blessed` and `blessed-contrib`.
-         * @param {DetailedRecord} record - The selected record.
+         * Generate a horizontal terminal chart for a record and return to the menu upon user input.
+         * @param {DetailedRecord} record - The record to display.
          */
-        const generateInteractiveChart = (record: DetailedRecord): void => {
-            // Create a screen object
-            const screen = blessed.screen({
-                smartCSR: true,
-                title: 'Record Chart',
-            });
+        const generateTerminalChart = async (record: DetailedRecord): Promise<void> => {
+            const term = termkit.terminal; // Reinitialize terminal object for terminal-kit
 
-            // Add a box for displaying the chart
-            const grid = new contrib.grid({ rows: 12, cols: 12, screen: screen });
+            // Clear the terminal and display the chart
+            term.clear();
+            term.bold.underline(`Horizontal Chart for ${record.Company} (${record.Year})\n\n`);
 
-            // Bar chart configuration
-            const bar = grid.set(0, 0, 12, 12, contrib.bar, {
-                label: `Chart for ${record.Company} (${record.Year})`,
-                barWidth: 10,
-                barSpacing: 5,
-                xOffset: 2,
-                maxHeight: 100,
-                barBgColor: 'blue',
-            });
-
-            // Chart data
             const labels = ['Throughput', 'Committed', 'Uncommitted', 'Available'];
-            const data = [
+            const values = [
                 record.Throughput || 0,
                 record.CommittedVolumes || 0,
                 record.UncommittedVolumes || 0,
                 record.AvailableCapacity || 0,
             ];
 
-            bar.setData({ titles: labels, data: data });
-
-            // Quit on Escape, Q, or Ctrl+C
-            screen.key(['escape', 'q', 'C-c'], () => {
-                screen.destroy();
+            // Display each metric as a horizontal bar
+            labels.forEach((label, index) => {
+                const barLength = Math.round((values[index] / Math.max(...values)) * 20); // Scale bars to fit
+                term(`${label.padEnd(12)}: `);
+                term.green('█'.repeat(barLength));
+                term(` ${values[index].toFixed(2)}\n`);
             });
 
-            // Render the screen
-            screen.render();
+            term('\nPress any key to return to the menu...\n');
+
+            // Capture a key press and exit the chart view
+            term.grabInput();
+            return new Promise<void>((resolve) => {
+                term.on('key', () => {
+                    term.grabInput(false); // Stop capturing input
+                    term.clear();
+                    resolve(); // Resolve the promise to return to the menu
+                });
+            });
         };
+
 
         // Override rl.close to resolve the promise when the program exits
         const originalRlClose = rl.close.bind(rl);
