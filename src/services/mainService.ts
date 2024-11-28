@@ -419,19 +419,25 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 const throughputBarLength = Math.round((throughputValues[index] / maxValue) * maxBarLength);
                 const capacityBarLength = Math.round((capacityValues[index] / maxValue) * maxBarLength);
         
+                // Display throughput bar
                 term(`${label.padEnd(20)}: `);
                 term.bgBlue(' '.repeat(throughputBarLength)).styleReset();
-                term(` Throughput: ${throughputValues[index].toFixed(2)}`);
+                term(` Throughput: ${throughputValues[index].toFixed(2)}\n`);
         
-                term('\n'.padEnd(22, ' '));
+                // Display capacity bar
+                term(' '.repeat(22)); // Indent for alignment
                 term.bgYellow(' '.repeat(capacityBarLength)).styleReset();
                 term(` Capacity: ${capacityValues[index].toFixed(2)}\n`);
+        
+                // Add a blank line or separator after each row
+                term(pc.gray("\n--------------------\n"));
             });
         
             term.bold.underline("\nLegend:").styleReset();
             term("\n Blue = Throughput (1000 m³/d)");
             term("\n Yellow = Available Capacity (1000 m³/d)\n\n");
         };
+        
         
         const interactiveChartMenu = async (): Promise<void> => {
             console.log(`
