@@ -6,6 +6,7 @@ import readline from 'readline'; // Used for interactive terminal input
 import fs from 'fs';  // File system to save new CSV files
 import pc from 'picocolors';  // External library for colorized output in the terminal
 import { parse } from 'csv-parse';
+import { interactiveChartMenu } from './chartService';
 
 /**
  * Handles the main program logic of loading the dataset and interacting with the user.
@@ -33,6 +34,7 @@ import { parse } from 'csv-parse';
  * @see {@link https://github.com/alexeyraspopov/picocolors Picocolors Documentation} for terminal string styling.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/console/log console.log()} for printing output in the terminal.
  * @see {@link https://nodejs.org/api/readline.html Node.js readline API} for interactive user input.
+ * @see {@link https://www.npmjs.com/package/terminal-kit terminal-kit Documentation} for terminal-based charting and UI interactions.
  * 
  * @param {string} filePath - The path to the CSV file to load.
  * @returns {Promise<DetailedRecord[]>} A promise that resolves with the updated records when the program exits.
@@ -63,7 +65,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
     }
 
     // Create an interface for user input
-    const rl = readline.createInterface({
+    let rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
@@ -85,7 +87,8 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
         4. Delete a record
         5. Reload dataset
         6. Save dataset to file
-        7. Exit
+        7. Interactive Charting Options
+        8. Exit
         `);
 
             // Display author's name at the end of the menu
@@ -94,44 +97,58 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
             rl.question("\nChoose an option: ", handleMenuInput);
         };
 
-        /**
-         * Handles the user's menu selection and performs the corresponding action.
-         * @param {string} choice - The user's menu choice.
-         * @returns {void}
-         */
-        const handleMenuInput = (choice: string): void => {
+        const handleMenuInput = async (choice: string): Promise<void> => {
+            await processMenuChoice(choice.trim());
+        };
+
+        const processMenuChoice = async (choice: string): Promise<void> => {
             switch (choice) {
-                case '1':  // Display all records
+                case '1': // Display all records
                     records.forEach((record, index) => {
                         console.log(pc.yellow(`\nRecord ${index + 1}:`));
                         displayRecord(record);
                     });
                     showMenu();
                     break;
-                case '2':  // Create a new record
-                    createRecord();
+
+                case '2': // Create a new record
+                    await createRecord();
                     break;
-                case '3':  // Update an existing record
-                    updateRecord();
+
+                case '3': // Update an existing record
+                    await updateRecord();
                     break;
-                case '4':  // Delete a record
-                    deleteRecord();
+
+                case '4': // Delete a record
+                    await deleteRecord();
                     break;
-                case '5':  // Reload the dataset
-                    reloadDataset();
+
+                case '5': // Reload the dataset
+                    await reloadDataset();
                     break;
-                case '6':  // Save the dataset to a file
+
+                case '6': // Save the dataset to a file
                     saveDataset();
                     break;
-                case '7':  // Exit the program
+
+                case '7': // Interactive Charting Options
+                await interactiveChartMenu(records, getInput, showMenu);
+                break;
+
+                case '8': // Exit the program
+                    console.log(pc.green("Exiting the program. Goodbye!"));
                     rl.close();
-                    break;
+                    return;
+
                 default:
                     console.log(pc.red('Invalid choice!'));
-                    showMenu();
                     break;
             }
+
+            // showMenu(); // Return to the main menu after processing
         };
+
+
 
         /**
          * Prompts the user for new record details, creates a new `DetailedRecord` object, and adds it to the in-memory dataset.
@@ -150,23 +167,23 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                     showMenu();
                     return;
                 }
-        
+
                 parse(input, { delimiter: ',', quote: '"', relax_quotes: true }, (err, output) => {
                     if (err) {
                         console.error(pc.red('Error parsing input. Please try again.'));
                         showMenu();
                         return;
                     }
-        
+
                     const data = output[0]; // Parsed array of values
-        
+
                     // Check if data array has exactly 17 fields
                     if (data.length !== 17) {
                         console.error(pc.red(`Insufficient data provided. Please enter exactly 17 fields. You entered ${data.length}.`));
                         showMenu();
                         return;
                     }
-        
+
                     // Proceed to create the DetailedRecord object
                     try {
                         const newRecord = new DetailedRecord(
@@ -188,7 +205,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                             parseFloat(data[15]),   // AvailableCapacity (number)
                             data[16]               // ReasonForVariance
                         );
-        
+
                         records.push(newRecord);
                         console.log(pc.green("Record added successfully!"));
                     } catch (e) {
@@ -198,7 +215,7 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 });
             });
         };
-        
+
         /**
          * Prompts the user for a record number and updated details, then updates the specified record.
          * 
@@ -355,6 +372,20 @@ export async function runProgram(filePath: string): Promise<DetailedRecord[]> {
                 console.error(pc.red(`Error saving dataset: ${(error instanceof Error) ? error.message : 'Unknown error'}`));
             }
             showMenu();
+        };
+
+        /**
+         * Prompts the user for input and resolves the entered value.
+         * 
+         * @param {string} prompt - The message to display to the user.
+         * @returns {Promise<string>} The user's input as a string.
+         */
+        const getInput = (prompt: string): Promise<string> => {
+            return new Promise((resolve, reject) => {
+                rl.question(pc.yellow(prompt), (input) => {
+                    resolve(input.trim());
+                });
+            });
         };
 
         // Override rl.close to resolve the promise when the program exits
