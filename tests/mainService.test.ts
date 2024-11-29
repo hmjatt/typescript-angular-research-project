@@ -61,7 +61,7 @@ describe('MainService', () => {
                 );
             })
             .mockImplementationOnce((_prompt: string, callback: any) => {
-                callback('7'); // Exit
+                callback('8'); // Exit
             });
 
         const resultRecords = await runProgram('./src/keystone-throughput-and-capacity.csv');
@@ -127,7 +127,7 @@ describe('MainService', () => {
                 );
             })
             .mockImplementationOnce((_prompt: string, callback: any) => {
-                callback('7'); // Exit
+                callback('8'); // Exit
             });
 
         const resultRecords = await runProgram('./src/keystone-throughput-and-capacity.csv');
